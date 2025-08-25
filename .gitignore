@@ -2,12 +2,12 @@
 */
 
 # Include only the news-manager module
-!/app/code/news/
+!/src/app/code/news/
 
 # But ignore the following directories in news-manager
-app/code/news/*/Test/
-app/code/news/*/test/
-app/code/news/*/tests/
+src/app/code/news/*/Test/
+src/app/code/news/*/test/
+src/app/code/news/*/tests/
 
 # Ignore IDE specific files
 .idea/
@@ -53,33 +53,33 @@ yarn-error.log
 /.vscode/
 
 # Ignore local configuration files
-app/etc/config.php
-app/etc/env.php
+src/app/etc/config.php
+src/app/etc/env.php
 
 # Ignore media files
-/media/*
-!/media/.htaccess
+src/media/*
+!src/media/.htaccess
 
 # Ignore import/export files
-/var/import/*
-/var/export/*
+src/var/import/*
+src/var/export/*
 
 # Ignore customer data
-/var/customer/
+src/var/customer/
 
 # Ignore session
-/var/session/
+src/var/session/
 
 # Ignore cache
-/var/cache/
+src/var/cache/
 
 # Ignore log files
-/var/log/
-/var/report/
+src/var/log/
+src/var/report/
 
 # Ignore temporary files
-/var/tmp/
-/var/.maintenance.flag
+src/var/tmp/
+src/var/.maintenance.flag
 
 # Keep .htaccess files
 !.htaccess
