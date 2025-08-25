@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Theme:etc/adminhtml/menu.xsd">
+    <menu>
+      <add id="News_Manger::news_header" title="News Manager" sortOrder="99" module="News_Manger" resource="News_Manger::news_header"/>
+      <add id="News_Manger::News" title="News" sortOrder="10" module="News_Manger" resource="News_Manger::admin"  action="news/news/index" parent="News_Manger::news_header"/>
+      <add id="News_Manger::Category" title="Category" sortOrder="20" module="News_Manger" resource="News_Manger::admin" action="news/category/index" parent="News_Manger::news_header"/>
+    </menu>
+</config>

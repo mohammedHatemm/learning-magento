@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<!--
+File: app/code/News/Manger/etc/di.xml
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!-- Filter Pools -->
+    <virtualType name="NewsGridFilterPool" type="Magento\Ui\Model\Filter\FilterPool">
+        <arguments>
+            <argument name="appliers" xsi:type="array">
+                <item name="regular" xsi:type="object">Magento\Ui\Model\Filter\RegularFilter</item>
+                <item name="fulltext" xsi:type="object">Magento\Ui\Model\Filter\FulltextFilter</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CategoryGridFilterPool" type="Magento\Ui\Model\Filter\FilterPool">
+        <arguments>
+            <argument name="appliers" xsi:type="array">
+                <item name="regular" xsi:type="object">Magento\Ui\Model\Filter\RegularFilter</item>
+                <item name="fulltext" xsi:type="object">Magento\Ui\Model\Filter\FulltextFilter</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Collection Factory UI Mappings -->
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="news_news_listing_data_source" xsi:type="string">NewsGridSearchResult</item>
+                <item name="news_category_listing_data_source" xsi:type="string">CategoryGridSearchResult</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- Search Result Virtual Types -->
+    <virtualType name="NewsGridSearchResult" type="News\Manger\Model\ResourceModel\News\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">news_news</argument>
+            <argument name="resourceModel" xsi:type="string">News\Manger\Model\ResourceModel\News</argument>
+            <argument name="eventPrefix" xsi:type="string">news_news_grid_collection</argument>
+            <argument name="eventObject" xsi:type="string">news_news_grid_collection</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CategoryGridSearchResult" type="News\Manger\Model\ResourceModel\Category\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">news_category</argument>
+            <argument name="eventPrefix" xsi:type="string">news_category_grid_collection</argument>
+            <argument name="eventObject" xsi:type="string">news_category_grid_collection</argument>
+            <argument name="resourceModel" xsi:type="string">News\Manger\Model\ResourceModel\Category</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- DataProviders -->
+    <type name="News\Manger\Ui\DataProvider\News\NewsGridDataProvider">
+        <arguments>
+            <argument name="collection" xsi:type="object">NewsGridSearchResult</argument>
+            <argument name="filterPool" xsi:type="object">NewsGridFilterPool</argument>
+        </arguments>
+    </type>
+
+    <type name="News\Manger\Ui\DataProvider\Category\CategoryGridDataProvider">
+        <arguments>
+            <argument name="collection" xsi:type="object">CategoryGridSearchResult</argument>
+            <argument name="filterPool" xsi:type="object">CategoryGridFilterPool</argument>
+            <argument name="name" xsi:type="string">news_category_listing_data_source</argument>
+            <argument name="primaryFieldName" xsi:type="string">category_id</argument>
+            <argument name="requestFieldName" xsi:type="string">category_id</argument>
+        </arguments>
+    </type>
+
+    <type name="News\Manger\Ui\DataProvider\Category\CategoryFormDataProvider">
+        <arguments>
+            <argument name="name" xsi:type="string">category_form_data_source</argument>
+            <argument name="primaryFieldName" xsi:type="string">category_id</argument>
+            <argument name="requestFieldName" xsi:type="string">category_id</argument>
+        </arguments>
+    </type>
+
+    <!-- Collections Configuration -->
+    <type name="News\Manger\Model\ResourceModel\News\Collection">
+        <arguments>
+            <argument name="eventPrefix" xsi:type="string">news_news_collection</argument>
+            <argument name="eventObject" xsi:type="string">news_news_collection</argument>
+            <argument name="resourceModel" xsi:type="string">News\Manger\Model\ResourceModel\News</argument>
+            <argument name="model" xsi:type="string">News\Manger\Model\News</argument>
+        </arguments>
+    </type>
+
+    <type name="News\Manger\Model\ResourceModel\Category\Collection">
+        <arguments>
+            <argument name="eventPrefix" xsi:type="string">news_category_collection</argument>
+            <argument name="eventObject" xsi:type="string">news_category_collection</argument>
+            <argument name="resourceModel" xsi:type="string">News\Manger\Model\ResourceModel\Category</argument>
+            <argument name="model" xsi:type="string">News\Manger\Model\Category</argument>
+        </arguments>
+    </type>
+
+    <type name="News\Manger\Model\ResourceModel\Category\Grid\Collection">
+        <arguments>
+            <argument name="eventPrefix" xsi:type="string">news_category_grid_collection</argument>
+            <argument name="eventObject" xsi:type="string">news_category_grid_collection</argument>
+            <argument name="resourceModel" xsi:type="string">News\Manger\Model\ResourceModel\Category</argument>
+            <argument name="model" xsi:type="string">News\Manger\Model\Category</argument>
+        </arguments>
+    </type>
+
+    <!-- Resource Models Configuration -->
+    <type name="News\Manger\Model\ResourceModel\Category">
+        <arguments>
+            <argument name="connectionName" xsi:type="string">default</argument>
+        </arguments>
+    </type>
+
+    <type name="News\Manger\Model\ResourceModel\News">
+        <arguments>
+            <argument name="connectionName" xsi:type="string">default</argument>
+        </arguments>
+    </type>
+
+    <!-- Model Configuration -->
+    <type name="News\Manger\Model\Category">
+        <arguments>
+            <argument name="eventPrefix" xsi:type="string">news_category</argument>
+            <argument name="eventObject" xsi:type="string">news_category</argument>
+            <argument name="idFieldName" xsi:type="string">category_id</argument>
+        </arguments>
+    </type>
+
+    <type name="News\Manger\Model\News">
+        <arguments>
+            <argument name="eventPrefix" xsi:type="string">news_news</argument>
+            <argument name="eventObject" xsi:type="string">news_news</argument>
+            <argument name="idFieldName" xsi:type="string">news_id</argument>
+        </arguments>
+    </type>
+
+</config>

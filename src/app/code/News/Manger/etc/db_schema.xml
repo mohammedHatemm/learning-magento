@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+
+    <!-- جدول التصنيفات -->
+    <table name="news_category" resource="default" engine="innodb" comment="News Category Table">
+        <column xsi:type="int" name="category_id" unsigned="true" nullable="false" identity="true" comment="Category ID"/>
+        <column xsi:type="varchar" name="category_name" length="255" nullable="false" comment="Category Name"/>
+        <column xsi:type="text" name="category_description" nullable="true" comment="Category Description"/>
+        <column xsi:type="boolean" name="category_status" nullable="false" default="1" comment="Category Status"/>
+        <column xsi:type="int" name="sort_order" unsigned="true" nullable="false" default="0" comment="Sort Order"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="category_id"/>
+        </constraint>
+
+        <index referenceId="NEWS_CATEGORY_NAME_IDX" indexType="btree">
+            <column name="category_name"/>
+        </index>
+
+        <index referenceId="NEWS_CATEGORY_STATUS_IDX" indexType="btree">
+            <column name="category_status"/>
+        </index>
+
+        <index referenceId="NEWS_CATEGORY_SORT_ORDER_IDX" indexType="btree">
+            <column name="sort_order"/>
+        </index>
+    </table>
+
+    <!-- جدول الأخبار -->
+    <table name="news_news" resource="default" engine="innodb" comment="News Table">
+        <column xsi:type="int" name="news_id" unsigned="true" nullable="false" identity="true" comment="News ID"/>
+        <column xsi:type="varchar" name="news_title" length="255" nullable="false" comment="News Title"/>
+        <column xsi:type="text" name="news_content" nullable="true" comment="News Content"/>
+        <column xsi:type="boolean" name="news_status" nullable="false" default="1" comment="News Status"/>
+        <column xsi:type="varchar" name="news_image" length="255" nullable="true" comment="News Image"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="news_id"/>
+        </constraint>
+
+        <index referenceId="NEWS_NEWS_TITLE_IDX" indexType="btree">
+            <column name="news_title"/>
+        </index>
+
+        <index referenceId="NEWS_NEWS_STATUS_IDX" indexType="btree">
+            <column name="news_status"/>
+        </index>
+    </table>
+
+    <!-- علاقة كثيرة إلى كثيرة: أخبار ↔ تصنيفات -->
+    <table name="news_news_category" resource="default" engine="innodb" comment="News to Category Relation">
+        <column xsi:type="int" name="news_id" unsigned="true" nullable="false" comment="News ID"/>
+        <column xsi:type="int" name="category_id" unsigned="true" nullable="false" comment="Category ID"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="news_id"/>
+            <column name="category_id"/>
+        </constraint>
+
+        <constraint xsi:type="foreign" referenceId="NEWS_NEWS_CATEGORY_NEWS_ID_FK"
+                    table="news_news_category"
+                    column="news_id"
+                    referenceTable="news_news"
+                    referenceColumn="news_id"
+                    onDelete="CASCADE"/>
+
+        <constraint xsi:type="foreign" referenceId="NEWS_NEWS_CATEGORY_CATEGORY_ID_FK"
+                    table="news_news_category"
+                    column="category_id"
+                    referenceTable="news_category"
+                    referenceColumn="category_id"
+                    onDelete="CASCADE"/>
+
+        <index referenceId="NEWS_NEWS_CATEGORY_CATEGORY_ID_IDX" indexType="btree">
+            <column name="category_id"/>
+        </index>
+    </table>
+
+    <!-- هيكل التصنيفات الهرمية (الفئات الفرعية) -->
+    <!-- الحل الأول: استخدام ID مستقل -->
+    <table name="news_category_hierarchy" resource="default" engine="innodb" comment="Category Hierarchy Table">
+        <column xsi:type="int" name="id" unsigned="true" nullable="false" identity="true" comment="Hierarchy ID"/>
+        <column xsi:type="int" name="category_id" unsigned="true" nullable="false" comment="Category ID"/>
+        <column xsi:type="int" name="parent_id" unsigned="true" nullable="true" comment="Parent Category ID (NULL if root)"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="hierarchy_id"/>
+        </constraint>
+
+        <!-- فهرس فريد لضمان عدم تكرار category_id -->
+        <constraint xsi:type="unique" referenceId="NEWS_CATEGORY_HIERARCHY_CATEGORY_ID_UNIQUE">
+            <column name="category_id"/>
+        </constraint>
+
+        <constraint xsi:type="foreign" referenceId="NEWS_CATEGORY_HIERARCHY_CATEGORY_ID_FK"
+                    table="news_category_hierarchy"
+                    column="category_id"
+                    referenceTable="news_category"
+                    referenceColumn="category_id"
+                    onDelete="CASCADE"/>
+
+        <constraint xsi:type="foreign" referenceId="NEWS_CATEGORY_HIERARCHY_PARENT_ID_FK"
+                    table="news_category_hierarchy"
+                    column="parent_id"
+                    referenceTable="news_category"
+                    referenceColumn="category_id"
+                    onDelete="CASCADE"/>
+
+        <index referenceId="NEWS_CATEGORY_HIERARCHY_PARENT_ID_IDX" indexType="btree">
+            <column name="parent_id"/>
+        </index>
+
+        <index referenceId="NEWS_CATEGORY_HIERARCHY_CATEGORY_ID_IDX" indexType="btree">
+            <column name="category_id"/>
+        </index>
+    </table>
+
+</schema>
