@@ -2,12 +2,12 @@
 */
 
 # Include only the news-manager module
-!/app/code/NewsManager/
+!/app/code/news/
 
 # But ignore the following directories in news-manager
-app/code/NewsManager/*/Test/
-app/code/NewsManager/*/test/
-app/code/NewsManager/*/tests/
+app/code/news/*/Test/
+app/code/news/*/test/
+app/code/news/*/tests/
 
 # Ignore IDE specific files
 .idea/
