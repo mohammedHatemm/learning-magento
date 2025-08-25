@@ -1,13 +1,13 @@
 # Ignore everything by default
 */
 
-# Include only the news-manager module
-!/src/app/code/news/
+# Include only the News/Manger module
+!/src/app/code/News/Manger/
 
-# But ignore the following directories in news-manager
-src/app/code/news/*/Test/
-src/app/code/news/*/test/
-src/app/code/news/*/tests/
+# But ignore test directories in the module
+/src/app/code/News/Manger/*/Test/
+/src/app/code/News/Manger/*/test/
+/src/app/code/News/Manger/*/tests/
 
 # Ignore IDE specific files
 .idea/
