@@ -1,0 +1,61 @@
+x-healthcheck-defaults: &healthcheck-defaults
+  interval: 10s
+  timeout: 10s
+  retries: 5
+
+x-healthcheck-slow-start: &healthcheck-slow-start
+  <<: *healthcheck-defaults
+  start_period: 40s
+
+services:
+  app:
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD-SHELL", "curl --fail 127.0.0.1:8000 || exit 1"]
+    depends_on:
+      phpfpm:
+        condition: service_started
+
+  phpfpm:
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      opensearch:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      # elasticsearch:
+      #   condition: service_healthy
+
+  db:
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -pmagento || mariadb-admin ping -h localhost -u root -pmagento"]
+
+  redis:
+    healthcheck:
+      <<: *healthcheck-slow-start
+      test: ["CMD-SHELL", "redis-cli ping || exit 1"]
+
+  opensearch:
+    healthcheck:
+      <<: *healthcheck-slow-start
+      test: ["CMD-SHELL", "curl --fail opensearch:9200/_cat/health >/dev/null || exit 1"]
+
+  # elasticsearch:
+  #   healthcheck:
+  #     <<: *healthcheck-slow-start
+  #     test: ["CMD-SHELL", "curl --fail elasticsearch:9200/_cat/health >/dev/null || exit 1"]
+
+  rabbitmq:
+    healthcheck:
+      <<: *healthcheck-slow-start
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
+
+  mailcatcher:
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider 127.0.0.1:1080 || exit 1"]
+

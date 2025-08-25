@@ -1,0 +1,92 @@
+# Ignore everything by default
+*/
+
+# Include only the news-manager module
+!/app/code/NewsManager/
+
+# But ignore the following directories in news-manager
+app/code/NewsManager/*/Test/
+app/code/NewsManager/*/test/
+app/code/NewsManager/*/tests/
+
+# Ignore IDE specific files
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Ignore OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Ignore Magento specific files
+generated/
+var/
+pub/static/*
+!pub/static/.htaccess
+!pub/static/CHANGELOG.md
+!pub/static/README.md
+!pub/static/RELEASE_NOTES.txt
+
+# Ignore environment files
+.env
+.env.*
+!.env.example
+
+# Ignore composer files
+composer.lock
+composer.phar
+/vendor/
+
+# Ignore npm files
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Ignore deployment files
+/.buildpath
+/.project
+/.settings/
+/.vscode/
+
+# Ignore local configuration files
+app/etc/config.php
+app/etc/env.php
+
+# Ignore media files
+/media/*
+!/media/.htaccess
+
+# Ignore import/export files
+/var/import/*
+/var/export/*
+
+# Ignore customer data
+/var/customer/
+
+# Ignore session
+/var/session/
+
+# Ignore cache
+/var/cache/
+
+# Ignore log files
+/var/log/
+/var/report/
+
+# Ignore temporary files
+/var/tmp/
+/var/.maintenance.flag
+
+# Keep .htaccess files
+!.htaccess
+
+# Keep README files
+!**/README.md
+!**/README
+
+# Keep composer.json
+!composer.json
