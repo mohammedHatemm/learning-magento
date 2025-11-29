@@ -1,8 +1,6 @@
 <?php
 
-namespace Elsherif\Product\Api;
-
-use Magento\Tests\NamingConvention\true\string;
+namespace Elsherif\Product\Api\Data;
 
 interface ConfigurableProductDataInterface
 {

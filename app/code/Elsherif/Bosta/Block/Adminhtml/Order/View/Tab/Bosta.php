@@ -9,7 +9,6 @@ use Elsherif\Bosta\Model\ResourceModel\TrackingEvent\CollectionFactory as Tracki
 use Magento\Backend\Block\Template;
 use Magento\Backend\Block\Template\Context;
 use Magento\Backend\Block\Widget\Tab\TabInterface;
-use Magento\Framework\Data\Form\FormKey;
 use Magento\Framework\Registry;
 
 class Bosta extends Template implements TabInterface
@@ -19,20 +18,17 @@ class Bosta extends Template implements TabInterface
     private Registry $coreRegistry;
     private DeliveryCollectionFactory $deliveryCollectionFactory;
     private TrackingEventCollectionFactory $trackingEventCollectionFactory;
-    private FormKey $formKey;
 
     public function __construct(
         Context $context,
         Registry $coreRegistry,
         DeliveryCollectionFactory $deliveryCollectionFactory,
         TrackingEventCollectionFactory $trackingEventCollectionFactory,
-        FormKey $formKey,
         array $data = []
     ) {
         $this->coreRegistry = $coreRegistry;
         $this->deliveryCollectionFactory = $deliveryCollectionFactory;
         $this->trackingEventCollectionFactory = $trackingEventCollectionFactory;
-        $this->formKey = $formKey;
         parent::__construct($context, $data);
     }
 

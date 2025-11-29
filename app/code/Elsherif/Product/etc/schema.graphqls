@@ -1,0 +1,42 @@
+type Mutation {
+    createConfigurableProduct(
+        input: CreateConfigurableProductInput!
+    ): CreateConfigurableProductOutput @resolver(class: "Elsherif\\Product\\Model\\Resolver\\CreateConfigurableProduct") @doc(description: "Create a configurable product")
+}
+
+input CreateConfigurableProductInput {
+    name: String! @doc(description: "Product name")
+    sku: String! @doc(description: "Product SKU")
+    price: Float! @doc(description: "Product price")
+    category_ids: [Int!]! @doc(description: "Category IDs")
+    attributes: [ConfigurableAttributeInput!]! @doc(description: "Configurable attributes")
+    variants: [VariantInput!]! @doc(description: "Product variants")
+}
+
+input ConfigurableAttributeInput {
+    code: String!
+    values: [AttributeValueInput!]!
+}
+
+input AttributeValueInput {
+    value: String!
+    label: String!
+}
+
+input VariantInput {
+    sku: String!
+    attributes: [VariantAttributeInput!]!
+    qty: Int!
+}
+
+input VariantAttributeInput {
+    code: String!
+    value: String!
+}
+
+type CreateConfigurableProductOutput {
+    product_id: Int!
+    sku: String!
+    message: String!
+    variant_ids: [Int!]!
+}
