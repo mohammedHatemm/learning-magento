@@ -1,237 +1,80 @@
-# Query Examples for News Manager GraphQL
+# Project Modules Overview
 
-# 1. Get News by ID with Categories
+This document provides a high-level architectural overview of the custom modules within this Magento 2 project. It is designed to serve as a technical blueprint, explaining the purpose, components, and data flow of each module.
 
-query GetNewsById {
-newsById(id: 1) {
-news_id
-news_title
-news_content
-news_status
-created_at
-categories {
-category_id
-category_name
-category_description
-}
-}
-}
+The modules are explained in a hierarchical structure, detailing the function of each key file.
 
-# 2. Get News List with Pagination and Filters
+---
 
-query GetNewsList {
-newsList(
-pageSize: 10,
-currentPage: 1,
-filter: {
-news_status: { eq: "1" }
-news_title: { like: "technology" }
-}
-) {
-items {
-news_id
-news_title
-news_content
-news_status
-categories {
-category_id
-category_name
-}
-}
-page_info {
-page_size
-current_page
-total_pages
-}
-total_count
-}
-}
+## 1. Bosta Shipping Integration (Module: `Elsherif_Bosta`)
 
-# 3. Get Category by ID with Children and News
+### Purpose
+This module integrates Bosta as a custom shipping carrier. Its primary functions are to fetch real-time shipping rates from the Bosta API during checkout, allow merchants to create shipments in the Bosta system directly from the Magento admin, and provide tracking information to customers.
 
-query GetCategoryById {
-categoryById(id: 1) {
-category_id
-category_name
-category_description
-category_status
-parent_ids
-children {
-category_id
-category_name
-category_status
-}
-news {
-news_id
-news_title
-news_status
-}
-}
-}
+### Hierarchy & Components
 
-# 4. Get Categories by Parent
+- **`app/code/Elsherif/Bosta/`**
+    - **`etc/module.xml`**: Registers the `Elsherif_Bosta` module.
+    - **`etc/config.xml`**: Defines default values for the shipping method's configuration, such as the default API endpoint, shipping method name, and allowed countries.
+    - **`etc/adminhtml/system.xml`**: Creates the configuration fields in the Magento admin under `Stores > Configuration > Sales > Shipping Methods`. This is where the merchant will enable the method, enter their Bosta API Key, and set other preferences.
+    - **`etc/di.xml`**: Used for dependency injection. For example, it can be used to inject a custom Logger for debugging API calls or to substitute a core class with a custom implementation if needed.
+    - **`Model/`**
+        - **`Carrier/Bosta.php`**: The core class for the shipping method. It must implement `Magento\Shipping\Model\Carrier\CarrierInterface`.
+            - **`collectRates(RateRequest $request)`**: This is the most important method. Magento calls it during checkout. Its job is to:
+                1.  Receive the cart details (destination, weight, value).
+                2.  Make an API call to Bosta with this information.
+                3.  Parse the API response, which should contain shipping service names and prices.
+                4.  Format the response into Magento's rate result object and return it to be displayed to the customer.
+            - **`proccessShipmentRequest(TrackRequest $request)`**: Called when a merchant creates a shipment for an order. This method sends the shipment details to the Bosta API to formally create the delivery and retrieve a tracking number.
+        - **`Bosta/ApiClient.php`** (Recommended Best Practice): A dedicated helper class responsible for all communication with the Bosta API. It handles authentication, formats requests, and parses responses. This separates the raw API logic from the Magento carrier logic in `Bosta.php`, making the code cleaner and easier to test.
 
-query GetCategoriesByParent {
-categoriesByParent(parentId: 1) {
-category_id
-category_name
-category_description
-category_status
-}
-}
+---
 
-# 5. Get News List by Category
+## 2. Custom Product (Module: `Elsherif_Product`)
 
-query GetNewsListByCategory {
-newsListByCategory(categoryId: 1) {
-news_id
-news_title
-news_content
-news_status
-created_at
-}
-}
+### Purpose
+This module introduces a new product type called `custom_configurable`. It extends Magento's standard configurable product, providing a unique architecture for managing product variations and their presentation on the storefront.
 
-# 6. Create News
+### Hierarchy & Components
 
-mutation CreateNews {
-createNews(
-input: {
-news_title: "New Technology Article"
-news_content: "This is the content of the new technology article..."
-news_status: 1
-category_ids: [1, 2]
-}
-) {
-news_id
-news_title
-news_content
-news_status
-created_at
-categories {
-category_id
-category_name
-}
-}
-}
+- **`app/code/Elsherif/Product/`**
+    - **`etc/module.xml`**: Registers the `Elsherif_Product` module.
+    - **`etc/product_types.xml`**: The declarative file that officially defines the `custom_configurable` product type for Magento, linking it to its core model.
+    - **`Model/`**
+        - **`Product/Type/CustomConfigurable.php`**: The backend engine for the product type. It defines how the product saves, how it handles its associated simple products, and its general behavior. It will likely extend `Magento\ConfigurableProduct\Model\Product\Type\Configurable`.
+        - **`Product/Price.php`**: A custom price model class that defines how the product's price is calculated and displayed. For a configurable product, this usually involves logic to determine the price based on the selected variation.
+    - **`view/`**
+        - **`adminhtml/ui_component/product_form.xml`**: Modifies the admin product edit page. It adds the custom user interface (a new fieldset or section) where merchants can create, assign, and manage the simple product variations for the `custom_configurable` parent product.
+        - **`frontend/layout/catalog_product_view_type_custom_configurable.xml`**: A specific layout file that dictates which blocks and templates to render on the product detail page when a customer is viewing a `custom_configurable` product.
+        - **`frontend/templates/product/view/type/custom_configurable.phtml`**: The template file that renders the actual HTML for the product options (e.g., color swatches, size dropdowns) on the storefront. It will work with JavaScript to update the page dynamically.
 
-# 7. Update News
+---
 
-mutation UpdateNews {
-updateNews(
-id: 1,
-input: {
-news_title: "Updated Technology Article"
-news_content: "This is the updated content..."
-news_status: 1
-category_ids: [1, 3]
-}
-) {
-news_id
-news_title
-news_content
-updated_at
-categories {
-category_id
-category_name
-}
-}
-}
+## 3. News Module (Module: `Elsherif_News`)
 
-# 8. Delete News
+### Purpose
+This module creates a simple Content Management System (CMS) for news articles. It allows merchants to create, edit, and manage news articles in the admin panel and display them on the frontend in a list and on individual detail pages.
 
-mutation DeleteNews {
-deleteNews(id: 1)
-}
+### Hierarchy & Components
 
-# 9. Create Category
-
-mutation CreateCategory {
-createCategory(
-input: {
-category_name: "Technology"
-category_description: "Technology related news"
-category_status: 1
-parent_ids: [1]
-}
-) {
-category_id
-category_name
-category_description
-category_status
-parent_ids
-created_at
-}
-}
-
-# 10. Update Category
-
-mutation UpdateCategory {
-updateCategory(
-id: 1,
-input: {
-category_name: "Updated Technology"
-category_description: "Updated description for technology category"
-category_status: 1
-}
-) {
-category_id
-category_name
-category_description
-updated_at
-}
-}
-
-# 11. Delete Category
-
-mutation DeleteCategory {
-deleteCategory(id: 1)
-}
-
-# 12. Add News to Category
-
-mutation AddNewsToCategory {
-addNewsToCategory(newsId: 1, categoryId: 2)
-}
-
-# 13. Remove News from Category
-
-mutation RemoveNewsFromCategory {
-removeNewsFromCategory(newsId: 1, categoryId: 2)
-}
-
-# 14. Complex Query - Get All Categories with Hierarchy
-
-query GetCategoryHierarchy {
-categoryList(
-pageSize: 100,
-filter: {
-category_status: { eq: "1" }
-}
-) {
-items {
-category_id
-category_name
-category_description
-parent_ids
-children {
-category_id
-category_name
-children {
-category_id
-category_name
-}
-}
-parents {
-category_id
-category_name
-}
-news {
-news_id
-news_title
-news_status
-}
-}
-total_count
-}
-}
+- **`app/code/Elsherif/News/`**
+    - **`etc/module.xml`**: Registers the `Elsherif_News` module.
+    - **`etc/db_schema.xml`**: Defines the schema for the custom database table (e.g., `elsherif_news_article`) that will store the news articles. Columns would include `article_id`, `title`, `content`, `author`, `image_path`, `created_at`, etc. Running `bin/magento setup:upgrade` will create this table.
+    - **`etc/adminhtml/`**
+        - **`menu.xml`**: Adds a new menu item in the admin sidebar (e.g., under `Content > Elements > News Articles`) to provide easy access to the news management grid.
+        - **`routes.xml`**: Defines the admin URL for the news management section (e.g., `admin/news/article`).
+    - **`Api/`** (Recommended Best Practice)
+        - **`Data/ArticleInterface.php`**: Defines the data structure of a news article using getter and setter methods.
+        - **`ArticleRepositoryInterface.php`**: Defines the service contract for managing news articles. It includes methods like `save(ArticleInterface $article)`, `getById($articleId)`, `getList()`, and `deleteById($articleId)`. Using a repository pattern is a Magento best practice.
+    - **`Model/`**
+        - **`Article.php`**: The model class that implements `ArticleInterface`.
+        - **`ArticleRepository.php`**: The repository implementation that contains the actual logic for saving, loading, and deleting articles from the database.
+        - **`ResourceModel/Article.php`** and **`ResourceModel/Article/Collection.php`**: The resource model and collection classes that provide the direct database abstraction for the `elsherif_news_article` table.
+    - **`Controller/`**
+        - **`Adminhtml/Article/Index.php`**: The controller for displaying the admin grid of news articles.
+        - **`Adminhtml/Article/Edit.php`**: The controller for the admin form to create or edit an article.
+        - **`Index/Index.php`**: A frontend controller to display a list of all news articles (e.g., at the URL `yourstore.com/news`).
+        - **`View/Index.php`**: A frontend controller to display a single news article (e.g., at `yourstore.com/news/view/id/1`).
+    - **`view/`**
+        - **`adminhtml/ui_component/`**: Contains the UI component XML files (`news_article_listing.xml`, `news_article_form.xml`) that define the admin grid and form.
+        - **`frontend/layout/`** and **`frontend/templates/`**: The layout XML and PHTML template files for rendering the news list and detail pages on the storefront.
