@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="News\Manger\Block\User\News\Index">
+        <plugin name="news_pagination_plugin" type="News\Manger\Plugin\Block\User\News\IndexPlugin" sortOrder="10" disabled="false"/>
+    </type>
+
+    <type name="News\Manger\Controller\User\News\Index">
+        <plugin name="news_controller_plugin" type="News\Manger\Plugin\Controller\User\News\IndexPlugin" sortOrder="10" disabled="false"/>
+    </type>
+
+    <!-- <type name="News\Manger\Helper\NewsPrompt">
+        <arguments>
+            <argument name="session" xsi:type="object">Magento\Customer\Model\Session</argument>
+        </arguments>
+    </type> -->
+</config>

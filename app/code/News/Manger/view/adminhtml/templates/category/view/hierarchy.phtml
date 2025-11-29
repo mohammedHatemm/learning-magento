@@ -1,0 +1,88 @@
+<?php
+
+/** @var \News\Manger\Block\Adminhtml\Category\View\Hierarchy $block */
+?>
+<div class="admin__page-section">
+  <h2><?= __('Category Hierarchy') ?></h2>
+
+  <?php if ($block->hasCategory()): ?>
+    <?php $breadcrumbPaths = $block->getBreadcrumbPaths(); ?>
+
+    <?php if (is_array($breadcrumbPaths) && !empty($breadcrumbPaths)): ?>
+      <?php foreach ($breadcrumbPaths as $pathIndex => $path): ?>
+        <div class="hierarchy-path">
+          <h4><?= __('Path %1:', $pathIndex + 1) ?></h4>
+          <ul class="hierarchy-list">
+            <?php foreach ($path as $item): ?>
+              <li class="level-<?= $item['level'] ?>">
+                <?= $this->escapeHtml($item['name']) ?>
+                <span class="level-info">(<?= __('Level') ?>: <?= $item['level'] ?>)</span>
+              </li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
+      <?php endforeach; ?>
+    <?php else: ?>
+      <p><?= __('This is a root category with no parent hierarchy.') ?></p>
+    <?php endif; ?>
+
+    <!-- عرض معلومات إضافية عن الـ category -->
+    <div class="category-info">
+      <?php $category = $block->getCurrentCategory(); ?>
+      <p><strong><?= __('Category Name:') ?></strong> <?= $this->escapeHtml($category->getCategoryName()) ?></p>
+      <p><strong><?= __('Level:') ?></strong> <?= $category->getLevel() ?></p>
+      <p><strong><?= __('Is Root:') ?></strong> <?= $category->isRoot() ? __('Yes') : __('No') ?></p>
+      <p><strong><?= __('Has Children:') ?></strong> <?= $category->hasChildren() ? __('Yes') : __('No') ?></p>
+    </div>
+
+  <?php else: ?>
+    <p><?= __('No category selected or category not found.') ?></p>
+  <?php endif; ?>
+</div>
+
+<style>
+  .hierarchy-path {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 5px;
+  }
+
+  .hierarchy-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .hierarchy-list li {
+    padding: 5px 0;
+    padding-left: calc(var(--level, 0) * 20px);
+  }
+
+  .hierarchy-list .level-1 {
+    --level: 1;
+  }
+
+  .hierarchy-list .level-2 {
+    --level: 2;
+  }
+
+  .hierarchy-list .level-3 {
+    --level: 3;
+  }
+
+  .hierarchy-list .level-4 {
+    --level: 4;
+  }
+
+  .level-info {
+    color: #666;
+    font-size: 0.9em;
+  }
+
+  .category-info {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f8f8;
+    border-radius: 5px;
+  }
+</style>

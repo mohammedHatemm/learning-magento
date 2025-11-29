@@ -1,0 +1,169 @@
+"""
+نوع معلومات الصفحة لبيانات Pagination.
+"""
+type SearchResultPageInfo {
+    page_size: Int!
+    current_page: Int!
+    total_pages: Int!
+}
+
+"""
+نوع يُمثّل فئة (Category).
+"""
+type Category {
+    category_id: Int!
+    category_name: String!
+    category_description: String
+    category_status: Int!
+    created_at: String
+    updated_at: String
+    parent_ids: [Int]
+    children: [Category]
+        @resolver(class: "News\\Manger\\Model\\Resolver\\Category\\Children")
+    parents: [Category]
+        @resolver(class: "News\\Manger\\Model\\Resolver\\Category\\Parents")
+    news: [News]
+        @resolver(class: "News\\Manger\\Model\\Resolver\\Category\\News")
+}
+
+"""
+نوع يُمثّل خبر (News).
+"""
+type News {
+    news_id: Int!
+    news_title: String!
+    news_content: String
+    news_status: Int!
+    news_image: String
+    created_at: String
+    updated_at: String
+    categories: [Category]
+        @resolver(class: "News\\Manger\\Model\\Resolver\\News\\Categories")
+}
+
+"""
+حاوية قائمة الأخبار مع Pagination.
+"""
+type NewsOutput {
+    items: [News]!
+    total_count: Int!
+    page_info: SearchResultPageInfo!
+}
+
+"""
+حاوية قائمة الفئات مع Pagination.
+"""
+type CategoryOutput {
+    items: [Category]!
+    total_count: Int!
+    page_info: SearchResultPageInfo!
+}
+
+"""
+فلترة لحقول الأخبار.
+"""
+input NewsFilterInput {
+    news_title: FilterTypeInput
+    news_status: FilterTypeInput
+    category_id: FilterTypeInput
+}
+
+"""
+فلترة لحقول الفئات.
+"""
+input CategoryFilterInput {
+    category_name: FilterTypeInput
+    category_status: FilterTypeInput
+    parent_id: FilterTypeInput
+}
+
+"""
+نوع يستخدم لتعريف شروط الفلترة البسيطة.
+"""
+input FilterTypeInput {
+    eq: String
+    like: String
+    in: [String]
+}
+
+"""
+مدخل بيانات لإنشاء خبر.
+"""
+input NewsInput {
+    news_title: String!
+    news_content: String!
+    news_status: Int
+    news_image: String
+    category_ids: [Int]
+}
+
+"""
+مدخل بيانات لإنشاء فئة.
+"""
+input CategoryInput {
+    category_name: String!
+    category_description: String
+    category_status: Int
+    parent_ids: [Int]
+}
+
+"""
+الاستعلامات الرئيسية المعتمدة.
+"""
+type Query {
+    newsById(id: Int!): News
+        @resolver(class: "News\\Manger\\Model\\Resolver\\NewsById")
+
+    NewsList(
+        pageSize: Int = 20
+        currentPage: Int = 1
+        filter: NewsFilterInput
+    ): NewsOutput @resolver(class: "News\\Manger\\Model\\Resolver\\NewsList")
+
+    categoryById(id: Int!): Category
+        @resolver(class: "News\\Manger\\Model\\Resolver\\CategoryById")
+
+    CategoryList(
+        pageSize: Int = 20
+        currentPage: Int = 1
+        filter: CategoryFilterInput
+    ): CategoryOutput
+        @resolver(class: "News\\Manger\\Model\\Resolver\\CategoryList")
+
+    categoriesByParent(parentId: Int!): [Category]
+        @resolver(class: "News\\Manger\\Model\\Resolver\\CategoriesByParent")
+
+    newsListByCategory(categoryId: Int!): [News]
+        @resolver(class: "News\\Manger\\Model\\Resolver\\NewsListByCategory")
+}
+
+"""
+التعديلات والإنشاءات على البيانات.
+"""
+type Mutation {
+    createNews(input: NewsInput!): News
+        @resolver(class: "News\\Manger\\Model\\Resolver\\CreateNews")
+
+    updateNews(id: Int!, input: NewsInput!): News
+        @resolver(class: "News\\Manger\\Model\\Resolver\\UpdateNews")
+
+    deleteNews(id: Int!): Boolean
+        @resolver(class: "News\\Manger\\Model\\Resolver\\DeleteNews")
+
+    createCategory(input: CategoryInput!): Category
+        @resolver(class: "News\\Manger\\Model\\Resolver\\CreateCategory")
+
+    updateCategory(id: Int!, input: CategoryInput!): Category
+        @resolver(class: "News\\Manger\\Model\\Resolver\\UpdateCategory")
+
+    deleteCategory(id: Int!): Boolean
+        @resolver(class: "News\\Manger\\Model\\Resolver\\DeleteCategory")
+
+    addNewsToCategory(newsId: Int!, categoryId: Int!): Boolean
+        @resolver(class: "News\\Manger\\Model\\Resolver\\AddNewsToCategory")
+
+    removeNewsFromCategory(newsId: Int!, categoryId: Int!): Boolean
+        @resolver(
+            class: "News\\Manger\\Model\\Resolver\\RemoveNewsFromCategory"
+        )
+}

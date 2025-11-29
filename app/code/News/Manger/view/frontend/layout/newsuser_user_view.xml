@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!--
+File: app/code/News/Manger/view/frontend/layout/newsuser_user_view.xml
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <title>News Details</title>
+    </head>
+    <body>
+        <referenceContainer name="content">
+            <block class="News\Manger\Block\User\News\View"
+                   name="news.user.view"
+                   template="News_Manger::user/news/view.phtml"
+                   cacheable="false"/>
+        </referenceContainer>
+    </body>
+</page>

@@ -1,0 +1,81 @@
+<?php
+
+/** @var \News\Manger\Block\Category\Navigation $block */
+$category = $block->getData('category');
+$categoryId = $category->getId();
+$children = $block->getChildCategories($categoryId);
+?>
+
+<li class="nav-item <?= !empty($children) ? 'has-children' : '' ?>">
+  <a href="<?= $block->escapeUrl($block->getCategoryUrl($categoryId)) ?>">
+    <?= $block->escapeHtml($category->getCategoryName()) ?>
+    <?php if (!empty($children)): ?>
+      <span class="dropdown-arrow">›</span>
+    <?php endif; ?>
+  </a>
+
+  <?php if (!empty($children)): ?>
+    <ul class="submenu">
+      <?php foreach ($children as $child): ?>
+        <?= $block->getLayout()->createBlock(\News\Manger\Block\Category\Navigation::class)
+          ->setTemplate('News_Manger::category/menu-item.phtml')
+          ->setData('category', $child)
+          ->toHtml();
+        ?>
+      <?php endforeach; ?>
+    </ul>
+  <?php endif; ?>
+</li>
+
+<style>
+  .dropdown-arrow {
+    margin-right: 5px;
+    display: inline-block;
+    transition: transform 0.3s ease;
+  }
+
+  li:hover>a>.dropdown-arrow {
+    transform: rotate(90deg);
+  }
+
+  .submenu {
+    position: absolute;
+    top: 0;
+    right: 100%;
+    min-width: 200px;
+    background: #fff;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  li:hover>.submenu {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  @media (max-width: 991px) {
+    .submenu {
+      position: static;
+      box-shadow: none;
+      padding-right: 20px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    li:hover>.submenu {
+      max-height: 1000px;
+    }
+
+    .dropdown-arrow {
+      float: left;
+      transform: rotate(0);
+    }
+
+    li:hover>a>.dropdown-arrow {
+      transform: rotate(0);
+    }
+  }
+</style>

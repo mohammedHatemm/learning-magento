@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Dependency Injection Configuration
+ *
+ * This file registers our plugin to intercept the AddressRepository save method
+ * The plugin will prevent duplicate addresses and set proper default flags
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!-- Plugin to intercept address save operations -->
+    <type name="Magento\Customer\Model\ResourceModel\AddressRepository">
+        <plugin name="custom_address_manager_prevent_duplicates"
+                type="Custom\AddressManager\Plugin\AddressRepositoryPlugin"
+                sortOrder="10"
+                disabled="false"/>
+    </type>
+
+</config>

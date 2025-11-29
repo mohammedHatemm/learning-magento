@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+
+    <!-- Category Table -->
+    <table name="news_category" resource="default" engine="innodb" comment="News Category Table">
+        <column xsi:type="int" name="category_id" unsigned="true" nullable="false" identity="true" comment="Category ID"/>
+        <column xsi:type="varchar" name="category_name" length="255" nullable="false" comment="Category Name"/>
+        <column xsi:type="text" name="category_description" nullable="true" comment="Category Description"/>
+        <column xsi:type="json" name="parent_ids" nullable="true" comment="Parent Category IDs Array"/>
+        <column xsi:type="smallint" name="category_status" unsigned="true" nullable="false" default="1" comment="Category Status"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="category_id"/>
+        </constraint>
+
+        <index referenceId="NEWS_CATEGORY_NAME_IDX" indexType="btree">
+            <column name="category_name"/>
+        </index>
+
+        <index referenceId="NEWS_CATEGORY_STATUS_IDX" indexType="btree">
+            <column name="category_status"/>
+        </index>
+    </table>
+
+    <!-- News Table -->
+    <table name="news_news" resource="default" engine="innodb" comment="News Table">
+        <column xsi:type="int" name="news_id" unsigned="true" nullable="false" identity="true" comment="News ID"/>
+        <column xsi:type="varchar" name="news_title" length="255" nullable="false" comment="News Title"/>
+        <column xsi:type="text" name="news_content" nullable="true" comment="News Content"/>
+        <column xsi:type="smallint" name="news_status" unsigned="true" nullable="false" default="1" comment="News Status"/>
+        <column xsi:type="varchar" name="news_image" length="255" nullable="true" comment="News Image"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="news_id"/>
+        </constraint>
+
+        <index referenceId="NEWS_NEWS_TITLE_IDX" indexType="btree">
+            <column name="news_title"/>
+        </index>
+
+        <index referenceId="NEWS_NEWS_STATUS_IDX" indexType="btree">
+            <column name="news_status"/>
+        </index>
+    </table>
+
+    <!-- Pivot Table for Many-to-Many Relation -->
+    <table name="news_news_category" resource="default" engine="innodb" comment="News to Category Relation">
+        <column xsi:type="int" name="news_id" unsigned="true" nullable="false" comment="News ID"/>
+        <column xsi:type="int" name="category_id" unsigned="true" nullable="false" comment="Category ID"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="news_id"/>
+            <column name="category_id"/>
+        </constraint>
+
+        <constraint xsi:type="foreign" referenceId="NEWS_NEWS_FK" table="news_news_category"
+                    column="news_id" referenceTable="news_news" referenceColumn="news_id"
+                    onDelete="CASCADE"/>
+
+        <constraint xsi:type="foreign" referenceId="NEWS_CATEGORY_FK" table="news_news_category"
+                    column="category_id" referenceTable="news_category" referenceColumn="category_id"
+                    onDelete="CASCADE"/>
+    </table>
+
+</schema>

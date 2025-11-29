@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+      layout="admin-2columns-left">
+
+    <update handle="styles" />
+
+    <body>
+        <referenceContainer name="content">
+            <block class="News\Manger\Block\Adminhtml\Category\View" name="category.view.container" template="News_Manger::category/view/view.phtml">
+                <block class="News\Manger\Block\Adminhtml\Category\View\Info" name="info" template="News_Manger::category/view/info.phtml"/>
+                <block class="News\Manger\Block\Adminhtml\Category\View\NewsCount" name="news_count" template="News_Manger::category/view/news_count.phtml"/>
+                <block class="News\Manger\Block\Adminhtml\Category\View\Hierarchy" name="hierarchy" template="News_Manger::category/view/hierarchy.phtml"/>
+
+            </block>
+        </referenceContainer>
+    </body>
+</page>

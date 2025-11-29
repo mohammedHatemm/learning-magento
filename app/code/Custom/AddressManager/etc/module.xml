@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Custom Address Manager Module Configuration
+ *
+ * Purpose: Prevent duplicate customer addresses and ensure proper display in dashboard
+ *
+ * Features:
+ * - Updates existing default address instead of creating duplicates
+ * - Sets default_billing and default_shipping flags automatically
+ * - Ensures addresses appear in customer dashboard
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
+    <module name="Custom_AddressManager" setup_version="1.0.0">
+        <sequence>
+            <module name="Magento_Customer"/>
+            <module name="Magento_Quote"/>
+            <module name="Magento_Checkout"/>
+        </sequence>
+    </module>
+</config>

@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+
+    <!-- Category Endpoints -->
+    <route url="/V1/news/categories" method="GET">
+        <service class="News\Manger\Api\CategoryRepositoryInterface" method="getList"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+    <route url="/V1/news/categories/:categoryId" method="GET">
+        <service class="News\Manger\Api\CategoryRepositoryInterface" method="getById"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+    <route url="/V1/news/categories" method="POST">
+        <service class="News\Manger\Api\CategoryRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+    <route url="/V1/news/categories/:categoryId" method="PUT">
+        <service class="News\Manger\Api\CategoryRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+    <route url="/V1/news/categories/:categoryId" method="DELETE">
+        <service class="News\Manger\Api\CategoryRepositoryInterface" method="deleteById"/>
+        <resources>
+            <resource ref="Magento_Backend::admin"/>
+        </resources>
+    </route>
+
+    <route url="/V1/news/categories/:categoryId/children" method="GET">
+        <service class="News\Manger\Api\CategoryRepositoryInterface" method="getChildren"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+    <route url="/V1/news/categories/:categoryId/parents" method="GET">
+        <service class="News\Manger\Api\CategoryRepositoryInterface" method="getParents"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+    <route url="/V1/news/categories/:categoryId/news" method="GET">
+        <service class="News\Manger\Api\CategoryRepositoryInterface" method="getNews"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+    <!-- News Endpoints -->
+    <route url="/V1/news" method="POST">
+        <service class="News\Manger\Api\NewsRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+    <route url="/V1/news" method="GET">
+        <service class="News\Manger\Api\NewsRepositoryInterface" method="getList"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+    <route url="/V1/news/:newsId" method="GET">
+        <service class="News\Manger\Api\NewsRepositoryInterface" method="getById"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+    <route url="/V1/news/:newsId" method="PUT">
+        <service class="News\Manger\Api\NewsRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+    <route url="/V1/news/:newsId" method="DELETE">
+        <service class="News\Manger\Api\NewsRepositoryInterface" method="deleteById"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+    <route url="/V1/news/:newsId/categories" method="GET">
+        <service class="News\Manger\Api\NewsRepositoryInterface" method="getCategories"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+    <route url="/V1/news/:newsId/categories" method="POST">
+        <service class="News\Manger\Api\NewsRepositoryInterface" method="setCategories"/>
+        <resources>
+            <resource ref="Magento_Backend::admin"/>
+        </resources>
+    </route>
+
+    <route url="/V1/news/:newsId/categories/:categoryId" method="DELETE">
+        <service class="News\Manger\Api\NewsRepositoryInterface" method="removeCategory"/>
+        <resources>
+            <resource ref="Magento_Backend::admin"/>
+        </resources>
+    </route>
+
+</routes>

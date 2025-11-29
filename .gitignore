@@ -1,0 +1,34 @@
+# Magento standard ignore + أشياء إضافية مهمة
+/vendor/
+/generated/
+/var/
+/pub/media/
+/pub/static/
+/app/code/Magento/
+/app/design/frontend/Magento/
+/app/design/adminhtml/Magento/
+/app/etc/env.php
+/app/etc/config.php
+/app/code/*/*/*.xml
+/node_modules/
+/npm/
+/composer.lock
+/pub/errors/local.xml
+/.idea/
+/.phpunit.result.cache
+/.php-cs-fixer.cache
+/*.swp
+*.DS_Store
+*.log
+
+# ملفات حساسة أو مؤقتة
+auth.json
+auth.json.sample
+.env
+.env.local
+
+# كل حاجة إلا الكود اللي بتعدله بنفسك (اختياري - لو عايز تضمن)
+!.gitignore
+!app/code/Elsherif/
+!app/code/News/
+!app/code/Custom/

@@ -1,0 +1,111 @@
+/* File: app/code/News/Manger/view/frontend/web/css/source/_module.less */
+.news-list,
+.my-news {
+    .table-wrapper {
+        margin-top: 20px;
+
+        .table {
+            width: 100%;
+
+            th,
+            td {
+                padding: 10px;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+            }
+
+            th {
+                font-weight: bold;
+            }
+
+            .col.actions {
+                white-space: nowrap;
+
+                .action {
+                    margin-right: 10px;
+
+                    &.delete {
+                        color: #e02b27;
+                    }
+                }
+            }
+        }
+    }
+
+    .actions {
+        margin: 20px 0;
+    }
+}
+
+.news-form {
+    .field {
+        margin-bottom: 15px;
+
+        .label {
+            font-weight: 600;
+            margin: 0 0 5px;
+            display: block;
+        }
+
+        .control {
+            input[type="text"],
+            .select,
+            .textarea {
+                width: 100%;
+                max-width: 500px;
+            }
+
+            .textarea {
+                min-height: 200px;
+            }
+        }
+    }
+
+    .actions-toolbar {
+        margin-top: 30px;
+
+        .primary {
+            display: inline-block;
+            margin-right: 10px;
+        }
+    }
+}
+
+.news-view {
+    .news-meta {
+        margin: 15px 0;
+        color: #666;
+        font-size: 14px;
+
+        span {
+            margin-right: 20px;
+        }
+    }
+
+    .news-content {
+        line-height: 1.6;
+        margin: 20px 0;
+    }
+
+    .actions {
+        margin-top: 30px;
+    }
+}
+
+// Responsive styles
+.media-width(@extremum, @break)
+    when
+    (@extremum = "max")
+    and
+    (@break = @screen__m) {
+    .news-list,
+    .my-news {
+        .table-wrapper {
+            overflow-x: auto;
+
+            .table {
+                min-width: 600px;
+            }
+        }
+    }
+}

@@ -1,0 +1,32 @@
+<?php
+
+/** @var \News\Manger\Block\Adminhtml\Category\View\Info $block */ ?>
+<div class="admin__page-section">
+  <h2><?= __('Category Information') ?></h2>
+  <table class="admin__table-secondary">
+    <tr>
+      <th><?= __('ID') ?></th>
+      <td><?= $block->getCategory()->getId() ?></td>
+    </tr>
+    <tr>
+      <th><?= __('Name') ?></th>
+      <td><?= $block->getCategory()->getCategoryName() ?></td>
+    </tr>
+    <tr>
+      <th><?= __('Description') ?></th>
+      <td><?= $block->getCategory()->getCategoryDescription() ?></td>
+    </tr>
+    <tr>
+      <th><?= __('Status') ?></th>
+      <td><?= $block->getCategory()->isActive() ? __('Active') : __('Inactive') ?></td>
+    </tr>
+    <tr>
+      <th><?= __('Created At') ?></th>
+      <td><?= $block->getCategory()->getCreatedAt() ?></td>
+    </tr>
+    <tr>
+      <th><?= __('Updated At') ?></th>
+      <td><?= $block->getCategory()->getUpdatedAt() ?></td>
+    </tr>
+  </table>
+</div>

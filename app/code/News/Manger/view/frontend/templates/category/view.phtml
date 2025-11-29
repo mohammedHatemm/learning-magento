@@ -1,0 +1,167 @@
+<?php
+
+/** @var \News\Manger\Block\Category\View $block */
+$category = $block->getCategory();
+
+$news = $block->getCategoryNews();
+?>
+
+<?php if ($category): ?>
+  <div class="category-news-container">
+    <div class="category-header">
+      <h1><?= $block->escapeHtml($category->getCategoryName()) ?></h1>
+      <?php if ($category->getDescription()): ?>
+        <div class="category-description">
+          <?= $block->escapeHtml($category->getCategoryDescription()) ?>
+        </div>
+      <?php endif; ?>
+    </div>
+
+    <?php if ($news && $news->getSize() > 0): ?>
+      <div class="news-grid">
+        <?php foreach ($news as $newsItem): ?>
+          <div class="news-item">
+            <div class="news-title">
+              <?php if ($newsItem->getNewsTitle()): ?>
+                <h2><?= $block->escapeHtml($newsItem->getNewsTitle()) ?></h2>
+              <?php else: ?>
+                <h2><?= $block->escapeHtml(__('Untitled News')) ?></h2>
+              <?php endif; ?>
+            </div>
+
+            <div class="news-content">
+              <h2>
+                <a href="<?= $block->getUrl('newsuser/user/view', ['id' => $newsItem->getId()]) ?>">
+                  <?= $block->escapeHtml($newsItem->getNewsTitle()) ?>
+                </a>
+              </h2>
+
+              <?php if ($newsItem->getExcerpt()): ?>
+                <p class="news-excerpt">
+                  <?= $block->escapeHtml($newsItem->getExcerpt()) ?>
+                </p>
+              <?php endif; ?>
+
+              <div class="news-meta">
+                <span class="news-date">
+                  <?= $block->escapeHtml($block->formatDate($newsItem->getCreatedAt())) ?>
+                </span>
+              </div>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      </div>
+    <?php else: ?>
+      <div class="no-news-message">
+        <p><?= $block->escapeHtml(__('No news articles found in this category.')) ?></p>
+      </div>
+    <?php endif; ?>
+  </div>
+
+  <style>
+    .category-news-container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .category-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .category-header h1 {
+      font-size: 2.5rem;
+      color: #2c3e50;
+      margin-bottom: 15px;
+    }
+
+    .category-description {
+      color: #7f8c8d;
+      font-size: 1.1rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .news-item {
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .news-item:hover {
+      transform: translateY(-5px);
+    }
+
+    .news-image img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .news-content {
+      padding: 20px;
+    }
+
+    .news-content h2 {
+      font-size: 1.4rem;
+      margin-bottom: 15px;
+    }
+
+    .news-content h2 a {
+      color: #2c3e50;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .news-content h2 a:hover {
+      color: #3498db;
+    }
+
+    .news-excerpt {
+      color: #666;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    .news-meta {
+      color: #95a5a6;
+      font-size: 0.9rem;
+    }
+
+    .no-news-message {
+      text-align: center;
+      padding: 40px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      color: #666;
+    }
+
+    @media (max-width: 768px) {
+      .category-header h1 {
+        font-size: 2rem;
+      }
+
+      .news-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+<?php else: ?>
+  <div class="category-not-found">
+    <h2><?= $block->escapeHtml(__('Category Not Found')) ?></h2>
+    <p><?= $block->escapeHtml(__('The requested category could not be found.')) ?></p>
+    <a href="<?= $block->escapeUrl($block->getUrl('newsuser/user')) ?>" class="back-link">
+      <?= $block->escapeHtml(__('Back to News List')) ?>
+    </a>
+  </div>
+<?php endif; ?>
