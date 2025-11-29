@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Elsherif_Bosta::bosta" title="Bosta" translate="title" module="Elsherif_Bosta" sortOrder="100" parent="Magento_Sales::sales" resource="Elsherif_Bosta::bosta"/>
+        <add id="Elsherif_Bosta::delivery" title="Deliveries" translate="title" module="Elsherif_Bosta" sortOrder="10" parent="Elsherif_Bosta::bosta" action="bosta/delivery/index" resource="Elsherif_Bosta::delivery"/>
+        <add id="Elsherif_Bosta::pickup" title="Pickups" translate="title" module="Elsherif_Bosta" sortOrder="20" parent="Elsherif_Bosta::bosta" action="bosta/pickup/index" resource="Elsherif_Bosta::pickup"/>
+        <add id="Elsherif_Bosta::config" title="Configuration" translate="title" module="Elsherif_Bosta" sortOrder="99" parent="Elsherif_Bosta::bosta" action="adminhtml/system_config/edit/section/carriers" resource="Elsherif_Bosta::config"/>
+    </menu>
+</config>

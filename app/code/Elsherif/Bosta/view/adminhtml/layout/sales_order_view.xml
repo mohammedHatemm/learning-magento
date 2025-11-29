@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="order_tab">
+            <block class="Elsherif\Bosta\Block\Adminhtml\Order\View\Tab\Bosta"
+                   name="order_tab_bosta"
+                   template="Elsherif_Bosta::order/view/tab/bosta.phtml">
+                <arguments>
+                    <argument name="tab_label" xsi:type="string">Bosta Delivery</argument>
+                </arguments>
+            </block>
+        </referenceBlock>
+    </body>
+</page>

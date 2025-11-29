@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <carriers>
+            <customshipping>
+                <active>1</active>
+                <title>Bosta Shipping</title>
+                <name>Bosta Express Delivery</name>
+                <model>Elsherif\Bosta\Model\Carrier\Customshipping</model>
+
+                <!-- API Configuration -->
+                <api_key></api_key>
+                <api_mode>1</api_mode><!-- 0 = Staging, 1 = Production -->
+                <pickup_location_id></pickup_location_id>
+                <debug>1</debug><!-- Enable debug by default for testing -->
+
+                <!-- Rate Calculation -->
+                <calculation_method>by_city_and_weight</calculation_method>
+                <shipping_cost>30</shipping_cost>
+                <free_shipping_threshold>500</free_shipping_threshold>
+                <handling_fee>0</handling_fee>
+
+                <!-- Country Settings -->
+                <sallowspecific>0</sallowspecific>
+                <specificcountry>EG</specificcountry>
+                <showmethod>1</showmethod>
+                <specificerrmsg>Bosta shipping is not available for your location. Please contact support.</specificerrmsg>
+
+                <sort_order>15</sort_order>
+            </customshipping>
+        </carriers>
+    </default>
+</config>

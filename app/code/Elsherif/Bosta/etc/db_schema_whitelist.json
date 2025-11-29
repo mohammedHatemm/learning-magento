@@ -1,0 +1,83 @@
+{
+    "bosta_delivery": {
+        "column": {
+            "entity_id": true,
+            "order_id": true,
+            "tracking_number": true,
+            "bosta_delivery_id": true,
+            "delivery_type": true,
+            "status": true,
+            "cod_amount": true,
+            "shipping_cost": true,
+            "delivery_data": true,
+            "awb_url": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "BOSTA_DELIVERY_ORDER_ID_SALES_ORDER_ENTITY_ID": true,
+            "BOSTA_DELIVERY_TRACKING_NUMBER": true
+        },
+        "index": {
+            "BOSTA_DELIVERY_ORDER_ID": true,
+            "BOSTA_DELIVERY_STATUS": true
+        }
+    },
+    "bosta_tracking_event": {
+        "column": {
+            "entity_id": true,
+            "delivery_id": true,
+            "status": true,
+            "description": true,
+            "location": true,
+            "event_timestamp": true,
+            "created_at": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "BOSTA_TRACKING_EVENT_DELIVERY_ID_BOSTA_DELIVERY_ENTITY_ID": true
+        },
+        "index": {
+            "BOSTA_TRACKING_EVENT_DELIVERY_ID": true,
+            "BOSTA_TRACKING_EVENT_STATUS": true
+        }
+    },
+    "bosta_pickup": {
+        "column": {
+            "entity_id": true,
+            "bosta_pickup_id": true,
+            "business_location_id": true,
+            "scheduled_date": true,
+            "scheduled_time_slot": true,
+            "status": true,
+            "contact_person_name": true,
+            "contact_person_phone": true,
+            "notes": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        },
+        "index": {
+            "BOSTA_PICKUP_STATUS": true,
+            "BOSTA_PICKUP_SCHEDULED_DATE": true
+        }
+    },
+    "bosta_pickup_delivery": {
+        "column": {
+            "pickup_id": true,
+            "delivery_id": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "BOSTA_PICKUP_DELIVERY_PICKUP_ID_BOSTA_PICKUP_ENTITY_ID": true,
+            "BOSTA_PICKUP_DELIVERY_DELIVERY_ID_BOSTA_DELIVERY_ENTITY_ID": true
+        },
+        "index": {
+            "BOSTA_PICKUP_DELIVERY_PICKUP_ID": true,
+            "BOSTA_PICKUP_DELIVERY_DELIVERY_ID": true
+        }
+    }
+}

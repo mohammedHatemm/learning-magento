@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+
+    <!-- Bosta Deliveries Table -->
+    <table name="bosta_delivery" resource="default" engine="innodb" comment="Bosta Delivery Table">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" identity="true" comment="Entity ID"/>
+        <column xsi:type="int" name="order_id" unsigned="true" nullable="false" comment="Magento Order ID"/>
+        <column xsi:type="varchar" name="tracking_number" nullable="true" length="100" comment="Bosta Tracking Number"/>
+        <column xsi:type="varchar" name="bosta_delivery_id" nullable="true" length="100" comment="Bosta Delivery ID"/>
+        <column xsi:type="smallint" name="delivery_type" unsigned="true" nullable="false" default="10" comment="Delivery Type: 10=Package, 20=COD"/>
+        <column xsi:type="varchar" name="status" nullable="true" length="50" comment="Delivery Status"/>
+        <column xsi:type="decimal" name="cod_amount" scale="4" precision="12" unsigned="false" nullable="true" comment="COD Amount"/>
+        <column xsi:type="decimal" name="shipping_cost" scale="4" precision="12" unsigned="false" nullable="true" comment="Shipping Cost"/>
+        <column xsi:type="text" name="delivery_data" nullable="true" comment="Full Delivery Data JSON"/>
+        <column xsi:type="varchar" name="awb_url" nullable="true" length="255" comment="AWB PDF URL"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Created At"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP" comment="Updated At"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+
+        <constraint xsi:type="foreign" referenceId="BOSTA_DELIVERY_ORDER_ID_SALES_ORDER_ENTITY_ID"
+                    table="bosta_delivery" column="order_id" referenceTable="sales_order"
+                    referenceColumn="entity_id" onDelete="CASCADE"/>
+
+        <constraint xsi:type="unique" referenceId="BOSTA_DELIVERY_TRACKING_NUMBER">
+            <column name="tracking_number"/>
+        </constraint>
+
+        <index referenceId="BOSTA_DELIVERY_ORDER_ID" indexType="btree">
+            <column name="order_id"/>
+        </index>
+
+        <index referenceId="BOSTA_DELIVERY_STATUS" indexType="btree">
+            <column name="status"/>
+        </index>
+    </table>
+
+    <!-- Bosta Tracking Events Table -->
+    <table name="bosta_tracking_event" resource="default" engine="innodb" comment="Bosta Tracking Events Table">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" identity="true" comment="Entity ID"/>
+        <column xsi:type="int" name="delivery_id" unsigned="true" nullable="false" comment="Bosta Delivery ID"/>
+        <column xsi:type="varchar" name="status" nullable="false" length="50" comment="Event Status"/>
+        <column xsi:type="text" name="description" nullable="true" comment="Event Description"/>
+        <column xsi:type="varchar" name="location" nullable="true" length="255" comment="Event Location"/>
+        <column xsi:type="timestamp" name="event_timestamp" on_update="false" nullable="false" comment="Event Timestamp"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Created At"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+
+        <constraint xsi:type="foreign" referenceId="BOSTA_TRACKING_EVENT_DELIVERY_ID_BOSTA_DELIVERY_ENTITY_ID"
+                    table="bosta_tracking_event" column="delivery_id" referenceTable="bosta_delivery"
+                    referenceColumn="entity_id" onDelete="CASCADE"/>
+
+        <index referenceId="BOSTA_TRACKING_EVENT_DELIVERY_ID" indexType="btree">
+            <column name="delivery_id"/>
+        </index>
+
+        <index referenceId="BOSTA_TRACKING_EVENT_STATUS" indexType="btree">
+            <column name="status"/>
+        </index>
+    </table>
+
+    <!-- Bosta Pickups Table -->
+    <table name="bosta_pickup" resource="default" engine="innodb" comment="Bosta Pickup Table">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" identity="true" comment="Entity ID"/>
+        <column xsi:type="varchar" name="bosta_pickup_id" nullable="true" length="100" comment="Bosta Pickup ID"/>
+        <column xsi:type="varchar" name="business_location_id" nullable="false" length="100" comment="Business Location ID"/>
+        <column xsi:type="date" name="scheduled_date" nullable="false" comment="Scheduled Date"/>
+        <column xsi:type="varchar" name="scheduled_time_slot" nullable="false" length="50" comment="Time Slot"/>
+        <column xsi:type="varchar" name="status" nullable="true" length="50" comment="Pickup Status"/>
+        <column xsi:type="varchar" name="contact_person_name" nullable="true" length="255" comment="Contact Person Name"/>
+        <column xsi:type="varchar" name="contact_person_phone" nullable="true" length="50" comment="Contact Person Phone"/>
+        <column xsi:type="text" name="notes" nullable="true" comment="Pickup Notes"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Created At"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP" comment="Updated At"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+
+        <index referenceId="BOSTA_PICKUP_STATUS" indexType="btree">
+            <column name="status"/>
+        </index>
+
+        <index referenceId="BOSTA_PICKUP_SCHEDULED_DATE" indexType="btree">
+            <column name="scheduled_date"/>
+        </index>
+    </table>
+
+    <!-- Bosta Pickup Deliveries Relation Table -->
+    <table name="bosta_pickup_delivery" resource="default" engine="innodb" comment="Bosta Pickup-Delivery Relation Table">
+        <column xsi:type="int" name="pickup_id" unsigned="true" nullable="false" comment="Pickup ID"/>
+        <column xsi:type="int" name="delivery_id" unsigned="true" nullable="false" comment="Delivery ID"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="pickup_id"/>
+            <column name="delivery_id"/>
+        </constraint>
+
+        <constraint xsi:type="foreign" referenceId="BOSTA_PICKUP_DELIVERY_PICKUP_ID_BOSTA_PICKUP_ENTITY_ID"
+                    table="bosta_pickup_delivery" column="pickup_id" referenceTable="bosta_pickup"
+                    referenceColumn="entity_id" onDelete="CASCADE"/>
+
+        <constraint xsi:type="foreign" referenceId="BOSTA_PICKUP_DELIVERY_DELIVERY_ID_BOSTA_DELIVERY_ENTITY_ID"
+                    table="bosta_pickup_delivery" column="delivery_id" referenceTable="bosta_delivery"
+                    referenceColumn="entity_id" onDelete="CASCADE"/>
+
+        <index referenceId="BOSTA_PICKUP_DELIVERY_PICKUP_ID" indexType="btree">
+            <column name="pickup_id"/>
+        </index>
+
+        <index referenceId="BOSTA_PICKUP_DELIVERY_DELIVERY_ID" indexType="btree">
+            <column name="delivery_id"/>
+        </index>
+    </table>
+</schema>

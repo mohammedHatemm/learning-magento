@@ -1,0 +1,295 @@
+<?php
+/**
+ * @var \Elsherif\Bosta\Block\Tracking\Info $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+$delivery = $block->getDelivery();
+$trackingNumber = $block->getTrackingNumber();
+?>
+
+<div class="bosta-tracking-container">
+    <div class="page-title-wrapper">
+        <h1 class="page-title">
+            <span class="base"><?= $escaper->escapeHtml(__('Track Your Shipment')) ?></span>
+        </h1>
+    </div>
+
+    <!-- Tracking Form -->
+    <div class="bosta-tracking-form">
+        <form action="<?= $escaper->escapeUrl($block->getUrl('bosta/tracking/index')) ?>" method="get">
+            <div class="field">
+                <label for="tracking" class="label">
+                    <span><?= $escaper->escapeHtml(__('Enter Tracking Number')) ?></span>
+                </label>
+                <div class="control">
+                    <input type="text"
+                           name="tracking"
+                           id="tracking"
+                           class="input-text"
+                           value="<?= $escaper->escapeHtmlAttr($trackingNumber) ?>"
+                           placeholder="<?= $escaper->escapeHtmlAttr(__('e.g., BOS123456789')) ?>"/>
+                </div>
+            </div>
+            <div class="actions-toolbar">
+                <div class="primary">
+                    <button type="submit" class="action primary">
+                        <span><?= $escaper->escapeHtml(__('Track Shipment')) ?></span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <?php if ($trackingNumber): ?>
+        <?php if ($delivery && $delivery->getId()): ?>
+            <!-- Delivery Information -->
+            <div class="bosta-delivery-info">
+                <div class="delivery-header">
+                    <h2>
+                        <?= $escaper->escapeHtml($block->getStatusIcon($delivery->getStatus())) ?>
+                        <?= $escaper->escapeHtml($block->formatStatus($delivery->getStatus())) ?>
+                    </h2>
+                    <p class="tracking-number">
+                        <?= $escaper->escapeHtml(__('Tracking Number:')) ?>
+                        <strong><?= $escaper->escapeHtml($delivery->getTrackingNumber()) ?></strong>
+                    </p>
+                </div>
+
+                <div class="delivery-details">
+                    <div class="detail-item">
+                        <span class="label"><?= $escaper->escapeHtml(__('Delivery Type:')) ?></span>
+                        <span class="value">
+                            <?= $delivery->getDeliveryType() == 20
+                                ? $escaper->escapeHtml(__('Cash on Delivery'))
+                                : $escaper->escapeHtml(__('Prepaid')) ?>
+                        </span>
+                    </div>
+                    <?php if ($delivery->getCodAmount()): ?>
+                    <div class="detail-item">
+                        <span class="label"><?= $escaper->escapeHtml(__('COD Amount:')) ?></span>
+                        <span class="value"><?= $escaper->escapeHtml(number_format($delivery->getCodAmount(), 2)) ?> EGP</span>
+                    </div>
+                    <?php endif; ?>
+                </div>
+
+                <div class="delivery-actions">
+                    <a href="<?= $escaper->escapeUrl($block->getBostaTrackingUrl($delivery->getTrackingNumber())) ?>"
+                       target="_blank"
+                       class="action primary">
+                        <?= $escaper->escapeHtml(__('Track on Bosta Website')) ?> ↗
+                    </a>
+                </div>
+            </div>
+
+            <!-- Tracking Timeline -->
+            <?php $trackingEvents = $block->getTrackingEvents(); ?>
+            <?php if ($trackingEvents && count($trackingEvents)): ?>
+            <div class="bosta-tracking-timeline">
+                <h3><?= $escaper->escapeHtml(__('Tracking History')) ?></h3>
+                <div class="timeline">
+                    <?php foreach ($trackingEvents as $event): ?>
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <span class="marker-icon"><?= $escaper->escapeHtml($block->getStatusIcon($event->getStatus())) ?></span>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="event-status">
+                                <?= $escaper->escapeHtml($block->formatStatus($event->getStatus())) ?>
+                            </div>
+                            <div class="event-description">
+                                <?= $escaper->escapeHtml($event->getDescription() ?: '-') ?>
+                            </div>
+                            <div class="event-meta">
+                                <span class="event-time">
+                                    <?= $escaper->escapeHtml($block->formatDate($event->getEventTimestamp(), \IntlDateFormatter::MEDIUM, true)) ?>
+                                </span>
+                                <?php if ($event->getLocation()): ?>
+                                <span class="event-location">
+                                    📍 <?= $escaper->escapeHtml($event->getLocation()) ?>
+                                </span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+
+        <?php else: ?>
+            <!-- No delivery found -->
+            <div class="message message-notice">
+                <p><?= $escaper->escapeHtml(__('No shipment found with tracking number: %1', $trackingNumber)) ?></p>
+                <p><?= $escaper->escapeHtml(__('Please check your tracking number and try again.')) ?></p>
+            </div>
+        <?php endif; ?>
+    <?php endif; ?>
+</div>
+
+<style>
+    .bosta-tracking-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .bosta-tracking-form {
+        background: #f5f5f5;
+        padding: 30px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+    }
+
+    .bosta-tracking-form .field {
+        margin-bottom: 20px;
+    }
+
+    .bosta-tracking-form .label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+
+    .bosta-tracking-form .input-text {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .bosta-delivery-info {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 30px;
+        margin-bottom: 30px;
+    }
+
+    .delivery-header h2 {
+        font-size: 24px;
+        margin: 0 0 10px 0;
+        color: #333;
+    }
+
+    .delivery-header .tracking-number {
+        color: #666;
+        margin: 10px 0;
+    }
+
+    .delivery-details {
+        margin: 20px 0;
+        padding: 20px 0;
+        border-top: 1px solid #eee;
+        border-bottom: 1px solid #eee;
+    }
+
+    .detail-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+    }
+
+    .detail-item .label {
+        font-weight: 600;
+        color: #666;
+    }
+
+    .detail-item .value {
+        color: #333;
+    }
+
+    .delivery-actions {
+        margin-top: 20px;
+    }
+
+    .bosta-tracking-timeline {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 30px;
+    }
+
+    .bosta-tracking-timeline h3 {
+        margin-top: 0;
+        margin-bottom: 30px;
+    }
+
+    .timeline {
+        position: relative;
+        padding-left: 40px;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #e0e0e0;
+    }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+    }
+
+    .timeline-marker {
+        position: absolute;
+        left: -40px;
+        top: 0;
+        width: 30px;
+        height: 30px;
+        background: white;
+        border: 2px solid #4CAF50;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .marker-icon {
+        font-size: 16px;
+    }
+
+    .timeline-content {
+        background: #f9f9f9;
+        padding: 15px;
+        border-radius: 6px;
+    }
+
+    .event-status {
+        font-weight: 600;
+        font-size: 16px;
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    .event-description {
+        color: #666;
+        margin-bottom: 10px;
+    }
+
+    .event-meta {
+        font-size: 14px;
+        color: #999;
+    }
+
+    .event-meta .event-time {
+        margin-right: 15px;
+    }
+
+    .message-notice {
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        border-radius: 4px;
+        padding: 20px;
+        margin-top: 20px;
+    }
+
+    .message-notice p {
+        margin: 5px 0;
+    }
+</style>

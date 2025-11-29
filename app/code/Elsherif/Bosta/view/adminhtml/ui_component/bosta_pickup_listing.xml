@@ -1,0 +1,216 @@
+<?xml version="1.0"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">bosta_pickup_listing.bosta_pickup_listing_data_source</item>
+        </item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="add">
+                <url path="*/*/new"/>
+                <class>primary</class>
+                <label translate="true">Create New Pickup</label>
+            </button>
+        </buttons>
+        <spinner>bosta_pickup_columns</spinner>
+        <deps>
+            <dep>bosta_pickup_listing.bosta_pickup_listing_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="bosta_pickup_listing_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">entity_id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <aclResource>Elsherif_Bosta::pickup</aclResource>
+        <dataProvider class="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider" name="bosta_pickup_listing_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>entity_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <listingToolbar name="listing_top">
+        <settings>
+            <sticky>true</sticky>
+        </settings>
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filterSearch name="fulltext"/>
+        <filters name="listing_filters">
+            <settings>
+                <templates>
+                    <filters>
+                        <select>
+                            <param name="template" xsi:type="string">ui/grid/filters/elements/ui-select</param>
+                            <param name="component" xsi:type="string">Magento_Ui/js/form/element/ui-select</param>
+                        </select>
+                    </filters>
+                </templates>
+            </settings>
+            <filterSelect name="status" provider="${ $.parentName }">
+                <settings>
+                    <captionValue>0</captionValue>
+                    <options>
+                        <option name="pending" xsi:type="array">
+                            <item name="value" xsi:type="string">pending</item>
+                            <item name="label" xsi:type="string" translate="true">Pending</item>
+                        </option>
+                        <option name="scheduled" xsi:type="array">
+                            <item name="value" xsi:type="string">scheduled</item>
+                            <item name="label" xsi:type="string" translate="true">Scheduled</item>
+                        </option>
+                        <option name="completed" xsi:type="array">
+                            <item name="value" xsi:type="string">completed</item>
+                            <item name="label" xsi:type="string" translate="true">Completed</item>
+                        </option>
+                        <option name="cancelled" xsi:type="array">
+                            <item name="value" xsi:type="string">cancelled</item>
+                            <item name="label" xsi:type="string" translate="true">Cancelled</item>
+                        </option>
+                    </options>
+                    <caption translate="true">Select...</caption>
+                    <label translate="true">Status</label>
+                    <dataScope>status</dataScope>
+                    <imports>
+                        <link name="visible">ns = ${ $.ns }, index = ${ $.index }:visible</link>
+                    </imports>
+                </settings>
+            </filterSelect>
+        </filters>
+        <massaction name="listing_massaction">
+            <action name="delete">
+                <settings>
+                    <confirm>
+                        <message translate="true">Are you sure you want to delete selected pickups?</message>
+                        <title translate="true">Delete pickups</title>
+                    </confirm>
+                    <url path="bosta/pickup/massDelete"/>
+                    <type>delete</type>
+                    <label translate="true">Delete</label>
+                </settings>
+            </action>
+        </massaction>
+        <paging name="listing_paging"/>
+    </listingToolbar>
+    <columns name="bosta_pickup_columns">
+        <settings>
+            <editorConfig>
+                <param name="clientConfig" xsi:type="array">
+                    <item name="saveUrl" xsi:type="url" path="bosta/pickup/inlineEdit"/>
+                    <item name="validateBeforeSave" xsi:type="boolean">false</item>
+                </param>
+                <param name="indexField" xsi:type="string">entity_id</param>
+                <param name="enabled" xsi:type="boolean">true</param>
+                <param name="selectProvider" xsi:type="string">bosta_pickup_listing.bosta_pickup_listing.bosta_pickup_columns.ids</param>
+            </editorConfig>
+            <childDefaults>
+                <param name="fieldAction" xsi:type="array">
+                    <item name="provider" xsi:type="string">bosta_pickup_listing.bosta_pickup_listing.bosta_pickup_columns_editor</item>
+                    <item name="target" xsi:type="string">startEdit</item>
+                    <item name="params" xsi:type="array">
+                        <item name="0" xsi:type="string">${ $.$data.rowIndex }</item>
+                        <item name="1" xsi:type="boolean">true</item>
+                    </item>
+                </param>
+            </childDefaults>
+        </settings>
+        <selectionsColumn name="ids">
+            <settings>
+                <indexField>entity_id</indexField>
+            </settings>
+        </selectionsColumn>
+        <column name="entity_id">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">ID</label>
+                <sorting>asc</sorting>
+            </settings>
+        </column>
+        <column name="bosta_pickup_id">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Bosta Pickup ID</label>
+            </settings>
+        </column>
+        <column name="business_location_id">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Business Location</label>
+            </settings>
+        </column>
+        <column name="scheduled_date" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date">
+            <settings>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+                <label translate="true">Scheduled Date</label>
+            </settings>
+        </column>
+        <column name="scheduled_time_slot">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Time Slot</label>
+            </settings>
+        </column>
+        <column name="status">
+            <settings>
+                <filter>select</filter>
+                <label translate="true">Status</label>
+                <options>
+                    <option name="pending" xsi:type="array">
+                        <item name="value" xsi:type="string">pending</item>
+                        <item name="label" xsi:type="string" translate="true">Pending</item>
+                    </option>
+                    <option name="scheduled" xsi:type="array">
+                        <item name="value" xsi:type="string">scheduled</item>
+                        <item name="label" xsi:type="string" translate="true">Scheduled</item>
+                    </option>
+                    <option name="completed" xsi:type="array">
+                        <item name="value" xsi:type="string">completed</item>
+                        <item name="label" xsi:type="string" translate="true">Completed</item>
+                    </option>
+                    <option name="cancelled" xsi:type="array">
+                        <item name="value" xsi:type="string">cancelled</item>
+                        <item name="label" xsi:type="string" translate="true">Cancelled</item>
+                    </option>
+                </options>
+            </settings>
+        </column>
+        <column name="contact_person_name">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Contact Person</label>
+            </settings>
+        </column>
+        <column name="contact_person_phone">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Phone</label>
+            </settings>
+        </column>
+        <column name="created_at" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date">
+            <settings>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+                <label translate="true">Created</label>
+            </settings>
+        </column>
+        <actionsColumn name="actions">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="urlEntityParamName" xsi:type="string">id</item>
+                    <item name="indexField" xsi:type="string">entity_id</item>
+                </item>
+            </argument>
+            <settings>
+                <indexField>entity_id</indexField>
+                <resizeEnabled>false</resizeEnabled>
+                <resizeDefaultWidth>107</resizeDefaultWidth>
+            </settings>
+        </actionsColumn>
+    </columns>
+</listing>

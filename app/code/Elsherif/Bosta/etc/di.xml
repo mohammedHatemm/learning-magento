@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!-- Preferences for repositories -->
+    <preference for="Elsherif\Bosta\Api\DeliveryRepositoryInterface"
+                type="Elsherif\Bosta\Model\DeliveryRepository"/>
+
+    <!-- Grid Collection for Delivery -->
+    <virtualType name="BostaDeliveryGridCollection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">bosta_delivery</argument>
+            <argument name="resourceModel" xsi:type="string">Elsherif\Bosta\Model\ResourceModel\Delivery</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Data Provider for Delivery Grid -->
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="bosta_delivery_listing_data_source" xsi:type="string">BostaDeliveryGridCollection</item>
+                <item name="bosta_pickup_listing_data_source" xsi:type="string">BostaPickupGridCollection</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- Grid Collection for Pickup -->
+    <virtualType name="BostaPickupGridCollection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">bosta_pickup</argument>
+            <argument name="resourceModel" xsi:type="string">Elsherif\Bosta\Model\ResourceModel\Pickup</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- CSRF Validator - Exempt webhook endpoint -->
+    <type name="Magento\Framework\App\Request\CsrfValidator">
+        <plugin name="bosta_csrf_validator_skip" type="Elsherif\Bosta\Plugin\CsrfValidatorSkip" sortOrder="10"/>
+    </type>
+
+</config>

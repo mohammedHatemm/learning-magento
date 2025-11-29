@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <!-- Create and save Bosta delivery when order is placed -->
+    <event name="sales_order_save_commit_after">
+        <observer name="elsherif_bosta_save_delivery_to_database"
+                  instance="Elsherif\Bosta\Observer\SaveDeliveryToDatabase"/>
+    </event>
+</config>

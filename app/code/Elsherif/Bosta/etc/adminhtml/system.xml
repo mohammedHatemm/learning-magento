@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="carriers">
+            <group id="customshipping" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Bosta Shipping</label>
+                <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Title</label>
+                    <comment>This title will be displayed to customers during checkout</comment>
+                </field>
+                <field id="name" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Method Name</label>
+                    <comment>Shipping method name shown to customers</comment>
+                </field>
+
+                <!-- Bosta API Configuration -->
+                <field id="api_heading" translate="label" sortOrder="35" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Bosta API Configuration</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="api_key" translate="label" type="textarea" sortOrder="36" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>API Key</label>
+                    <comment><![CDATA[Get your API key from <a href="https://business.bosta.co" target="_blank">Bosta Business Dashboard</a> → Settings → API Integration]]></comment>
+                    <validate>required-entry</validate>
+                </field>
+                <field id="api_mode" translate="label" type="select" sortOrder="37" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>API Mode</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Yes = Production, No = Staging/Testing</comment>
+                </field>
+                <field id="pickup_location_id" translate="label" type="text" sortOrder="38" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Pickup Location ID</label>
+                    <comment>Your default pickup location ID from Bosta dashboard</comment>
+                </field>
+                <field id="debug" translate="label" type="select" sortOrder="39" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Debug Mode</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Enable to log API requests and responses for debugging</comment>
+                </field>
+
+                <!-- Rate Calculation Configuration -->
+                <field id="rate_heading" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Rate Calculation Settings</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="calculation_method" translate="label" type="select" sortOrder="41" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Calculation Method</label>
+                    <source_model>Elsherif\Bosta\Model\Config\Source\CalculationMethod</source_model>
+                    <comment>Choose how shipping rates are calculated</comment>
+                </field>
+                <field id="shipping_cost" translate="label" type="text" sortOrder="42" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Fixed Shipping Cost</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <comment>Used when calculation method is set to Fixed Rate</comment>
+                    <depends>
+                        <field id="calculation_method">fixed</field>
+                    </depends>
+                </field>
+                <field id="free_shipping_threshold" translate="label" type="text" sortOrder="43" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Free Shipping Threshold</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <comment>Offer free shipping for orders above this amount (leave empty to disable)</comment>
+                </field>
+                <field id="handling_fee" translate="label" type="text" sortOrder="44" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Handling Fee</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <comment>Additional handling fee to add to shipping cost</comment>
+                </field>
+                <field id="include_vat" translate="label" type="select" sortOrder="45" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Include VAT in Shipping Price</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Add VAT to match Bosta final price (recommended: Yes)</comment>
+                </field>
+                <field id="vat_percentage" translate="label" type="text" sortOrder="46" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>VAT Percentage</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <comment>VAT percentage (e.g., 14 for 14%). Default: 14%</comment>
+                    <depends>
+                        <field id="include_vat">1</field>
+                    </depends>
+                </field>
+
+                <!-- Country and Display Settings -->
+                <field id="sallowspecific" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Ship to Applicable Countries</label>
+                    <frontend_class>shipping-applicable-country</frontend_class>
+                    <source_model>Magento\Shipping\Model\Config\Source\Allspecificcountries</source_model>
+                </field>
+                <field id="specificcountry" translate="label" type="multiselect" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Ship to Specific Countries</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                    <can_be_empty>1</can_be_empty>
+                </field>
+                <field id="showmethod" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Method if Not Applicable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <frontend_class>shipping-skip-hide</frontend_class>
+                </field>
+                <field id="specificerrmsg" translate="label" type="textarea" sortOrder="75" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Displayed Error Message</label>
+                    <comment>Message shown when Bosta shipping is not available</comment>
+                </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Sort Order</label>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

@@ -1,0 +1,262 @@
+<?php
+/**
+ * @var \Elsherif\Bosta\Block\Adminhtml\Order\View\Tab\Bosta $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+$delivery = $block->getDelivery();
+$order = $block->getOrder();
+?>
+
+<div class="admin__page-section-item order-bosta-info">
+    <?php if ($delivery && $delivery->getId()): ?>
+        <div class="admin__page-section-item-title">
+            <span class="title"><?= $escaper->escapeHtml(__('Bosta Delivery Information')) ?></span>
+            <div class="actions" style="float: right;">
+                <button type="button"
+                        class="action-default scalable"
+                        onclick="refreshBostaTracking(<?= (int)$delivery->getId() ?>)"
+                        id="refresh-tracking-btn"
+                        title="<?= $escaper->escapeHtmlAttr(__('Refresh tracking information from Bosta')) ?>">
+                    <span><?= $escaper->escapeHtml(__('Refresh Tracking')) ?></span>
+                </button>
+            </div>
+        </div>
+        <div class="admin__page-section-item-content">
+            <table class="admin__table-secondary order-bosta-table">
+                <tbody>
+                    <tr>
+                        <th><?= $escaper->escapeHtml(__('Tracking Number')) ?></th>
+                        <td>
+                            <strong><?= $escaper->escapeHtml($delivery->getTrackingNumber()) ?></strong>
+                            <a href="<?= $escaper->escapeUrl($block->getBostaTrackingUrl($delivery->getTrackingNumber())) ?>"
+                               target="_blank"
+                               title="<?= $escaper->escapeHtmlAttr(__('Track on Bosta')) ?>">
+                                <?= $escaper->escapeHtml(__('Track on Bosta')) ?> ↗
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><?= $escaper->escapeHtml(__('Bosta Delivery ID')) ?></th>
+                        <td><?= $escaper->escapeHtml($delivery->getBostaDeliveryId()) ?></td>
+                    </tr>
+                    <tr>
+                        <th><?= $escaper->escapeHtml(__('Current Status')) ?></th>
+                        <td>
+                            <span class="bosta-status bosta-status-<?= $escaper->escapeHtmlAttr(strtolower($delivery->getStatus())) ?>">
+                                <?= $escaper->escapeHtml($block->formatStatus($delivery->getStatus())) ?>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><?= $escaper->escapeHtml(__('Delivery Type')) ?></th>
+                        <td>
+                            <?= $delivery->getDeliveryType() == 20
+                                ? $escaper->escapeHtml(__('Cash on Delivery (COD)'))
+                                : $escaper->escapeHtml(__('Prepaid Package')) ?>
+                        </td>
+                    </tr>
+                    <?php if ($delivery->getCodAmount()): ?>
+                    <tr>
+                        <th><?= $escaper->escapeHtml(__('COD Amount')) ?></th>
+                        <td><?= $escaper->escapeHtml($order->formatPrice($delivery->getCodAmount())) ?></td>
+                    </tr>
+                    <?php endif; ?>
+                    <tr>
+                        <th><?= $escaper->escapeHtml(__('Shipping Cost')) ?></th>
+                        <td><?= $escaper->escapeHtml($order->formatPrice($delivery->getShippingCost())) ?></td>
+                    </tr>
+                    <tr>
+                        <th><?= $escaper->escapeHtml(__('Created At')) ?></th>
+                        <td><?= $escaper->escapeHtml($block->formatDate($delivery->getCreatedAt(), \IntlDateFormatter::MEDIUM, true)) ?></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <script>
+                require(['jquery', 'Magento_Ui/js/modal/alert'], function($, alert) {
+                    window.refreshBostaTracking = function(deliveryId) {
+                        var btn = $('#refresh-tracking-btn');
+                        btn.prop('disabled', true).find('span').text('<?= $escaper->escapeJs(__('Refreshing...')) ?>');
+
+                        $.ajax({
+                            url: '<?= $escaper->escapeUrl($block->getUrl('bosta/delivery/refresh')) ?>',
+                            type: 'POST',
+                            data: {
+                                delivery_id: deliveryId,
+                                form_key: '<?= $escaper->escapeJs($block->getFormKey()) ?>'
+                            },
+                            dataType: 'json',
+                            success: function(response) {
+                                if (response.success) {
+                                    alert({
+                                        title: '<?= $escaper->escapeJs(__('Success')) ?>',
+                                        content: response.message || '<?= $escaper->escapeJs(__('Tracking information updated!')) ?>',
+                                        actions: {
+                                            always: function() {
+                                                location.reload();
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    alert({
+                                        title: '<?= $escaper->escapeJs(__('Error')) ?>',
+                                        content: response.message || '<?= $escaper->escapeJs(__('Failed to refresh tracking.')) ?>'
+                                    });
+                                    btn.prop('disabled', false).find('span').text('<?= $escaper->escapeJs(__('Refresh Tracking')) ?>');
+                                }
+                            },
+                            error: function() {
+                                alert({
+                                    title: '<?= $escaper->escapeJs(__('Error')) ?>',
+                                    content: '<?= $escaper->escapeJs(__('An error occurred while refreshing tracking.')) ?>'
+                                });
+                                btn.prop('disabled', false).find('span').text('<?= $escaper->escapeJs(__('Refresh Tracking')) ?>');
+                            }
+                        });
+                    };
+                });
+            </script>
+
+            <?php if ($delivery->getAwbUrl()): ?>
+            <div class="bosta-awb-section" style="margin-top: 20px;">
+                <a href="<?= $escaper->escapeUrl($delivery->getAwbUrl()) ?>"
+                   target="_blank"
+                   class="action-default scalable primary"
+                   style="display: inline-block;">
+                    <span><?= $escaper->escapeHtml(__('Print Shipping Label (AWB)')) ?></span>
+                </a>
+                <button type="button"
+                        class="action-default scalable"
+                        onclick="window.open('<?= $escaper->escapeUrl($delivery->getAwbUrl()) ?>', '_blank', 'width=800,height=600')"
+                        style="display: inline-block; margin-left: 10px;">
+                    <span><?= $escaper->escapeHtml(__('Open in Print Dialog')) ?></span>
+                </button>
+            </div>
+            <?php endif; ?>
+
+            <!-- Tracking Events -->
+            <?php $trackingEvents = $block->getTrackingEvents(); ?>
+            <?php if ($trackingEvents && count($trackingEvents)): ?>
+            <div class="bosta-tracking-events" style="margin-top: 30px;">
+                <div class="admin__page-section-item-title">
+                    <span class="title"><?= $escaper->escapeHtml(__('Tracking History')) ?></span>
+                </div>
+                <table class="admin__table-secondary">
+                    <thead>
+                        <tr>
+                            <th><?= $escaper->escapeHtml(__('Date & Time')) ?></th>
+                            <th><?= $escaper->escapeHtml(__('Status')) ?></th>
+                            <th><?= $escaper->escapeHtml(__('Description')) ?></th>
+                            <th><?= $escaper->escapeHtml(__('Location')) ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($trackingEvents as $event): ?>
+                        <tr>
+                            <td><?= $escaper->escapeHtml($block->formatDate($event->getEventTimestamp(), \IntlDateFormatter::MEDIUM, true)) ?></td>
+                            <td>
+                                <span class="bosta-status-badge">
+                                    <?= $escaper->escapeHtml($block->formatStatus($event->getStatus())) ?>
+                                </span>
+                            </td>
+                            <td><?= $escaper->escapeHtml($event->getDescription() ?: '-') ?></td>
+                            <td><?= $escaper->escapeHtml($event->getLocation() ?: '-') ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+            <?php endif; ?>
+        </div>
+
+        <style>
+            .bosta-status {
+                padding: 5px 10px;
+                border-radius: 3px;
+                font-weight: bold;
+                display: inline-block;
+            }
+            .bosta-status-pending { background: #ffeaa7; color: #2d3436; }
+            .bosta-status-in_transit { background: #74b9ff; color: #2d3436; }
+            .bosta-status-out_for_delivery { background: #a29bfe; color: #fff; }
+            .bosta-status-delivered { background: #00b894; color: #fff; }
+            .bosta-status-cancelled { background: #d63031; color: #fff; }
+            .bosta-status-terminated { background: #d63031; color: #fff; }
+
+            .bosta-status-badge {
+                padding: 3px 8px;
+                border-radius: 3px;
+                background: #e0e0e0;
+                font-size: 12px;
+            }
+
+            .order-bosta-table th {
+                font-weight: 600;
+                width: 200px;
+            }
+        </style>
+
+    <?php else: ?>
+        <div class="message message-notice">
+            <p><?= $escaper->escapeHtml(__('No Bosta delivery found for this order.')) ?></p>
+            <p><?= $escaper->escapeHtml(__('The delivery will be created automatically after the order is placed with Bosta shipping method.')) ?></p>
+            <?php if ($order->getShippingMethod() && strpos($order->getShippingMethod(), 'customshipping') !== false): ?>
+                <button type="button"
+                        class="action-default scalable primary"
+                        onclick="createBostaDelivery(<?= (int)$order->getId() ?>)"
+                        id="create-bosta-delivery-btn"
+                        style="margin-top: 15px;">
+                    <span><?= $escaper->escapeHtml(__('Create Bosta Delivery Now')) ?></span>
+                </button>
+                <script>
+                    require(['jquery', 'Magento_Ui/js/modal/alert'], function($, alert) {
+                        window.createBostaDelivery = function(orderId) {
+                            if (!confirm('<?= $escaper->escapeJs(__('Are you sure you want to create a Bosta delivery for this order?')) ?>')) {
+                                return;
+                            }
+
+                            var btn = $('#create-bosta-delivery-btn');
+                            btn.prop('disabled', true).find('span').text('<?= $escaper->escapeJs(__('Creating...')) ?>');
+
+                            $.ajax({
+                                url: '<?= $escaper->escapeUrl($block->getUrl('bosta/delivery/create')) ?>',
+                                type: 'POST',
+                                data: {
+                                    order_id: orderId,
+                                    form_key: '<?= $escaper->escapeJs($block->getFormKey()) ?>'
+                                },
+                                dataType: 'json',
+                                success: function(response) {
+                                    if (response.success) {
+                                        alert({
+                                            title: '<?= $escaper->escapeJs(__('Success')) ?>',
+                                            content: response.message || '<?= $escaper->escapeJs(__('Delivery created successfully!')) ?>',
+                                            actions: {
+                                                always: function() {
+                                                    location.reload();
+                                                }
+                                            }
+                                        });
+                                    } else {
+                                        alert({
+                                            title: '<?= $escaper->escapeJs(__('Error')) ?>',
+                                            content: response.message || '<?= $escaper->escapeJs(__('Failed to create delivery.')) ?>'
+                                        });
+                                        btn.prop('disabled', false).find('span').text('<?= $escaper->escapeJs(__('Create Bosta Delivery Now')) ?>');
+                                    }
+                                },
+                                error: function() {
+                                    alert({
+                                        title: '<?= $escaper->escapeJs(__('Error')) ?>',
+                                        content: '<?= $escaper->escapeJs(__('An error occurred while creating the delivery.')) ?>'
+                                    });
+                                    btn.prop('disabled', false).find('span').text('<?= $escaper->escapeJs(__('Create Bosta Delivery Now')) ?>');
+                                }
+                            });
+                        };
+                    });
+                </script>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
+</div>

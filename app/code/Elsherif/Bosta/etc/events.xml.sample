@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!--
+  To enable automatic Bosta delivery creation:
+  1. Rename this file from events.xml.sample to events.xml
+  2. Clear cache: php bin/magento cache:flush
+
+  This will automatically create a Bosta delivery when an order is placed
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <!-- Create Bosta delivery after order is placed -->
+    <event name="sales_order_place_after">
+        <observer name="elsherif_bosta_create_delivery" instance="Elsherif\Bosta\Observer\CreateBostaDelivery"/>
+    </event>
+</config>
