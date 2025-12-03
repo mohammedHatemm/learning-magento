@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Elsherif. All rights reserved.
+ * Default Configuration Values
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <erp_integration>
+            <general>
+                <enabled>0</enabled>
+                <api_url>https://testerp.a2za1.com/api/resource/Customer</api_url>
+                <timeout>30</timeout>
+            </general>
+            <sync_settings>
+                <sync_on_registration>1</sync_on_registration>
+                <sync_on_update>1</sync_on_update>
+                <log_enabled>1</log_enabled>
+            </sync_settings>
+        </erp_integration>
+    </default>
+</config>

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Elsherif. All rights reserved.
+ * Event Observer Configuration
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <!-- Observer for customer registration -->
+    <event name="customer_register_success">
+        <observer name="elsherif_erp_customer_register"
+                  instance="Elsherif\ErpIntegration\Observer\CustomerRegisterSuccess"/>
+    </event>
+
+    <!-- Observer for customer save/update -->
+    <event name="customer_save_after_data_object">
+        <observer name="elsherif_erp_customer_save"
+                  instance="Elsherif\ErpIntegration\Observer\CustomerSaveAfter"/>
+    </event>
+</config>

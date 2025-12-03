@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Elsherif. All rights reserved.
+ * Admin Configuration for ERP Integration
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="elsherif" translate="label" sortOrder="400">
+            <label>Elsherif Extensions</label>
+        </tab>
+        <section id="erp_integration" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>ERP Integration</label>
+            <tab>elsherif</tab>
+            <resource>Elsherif_ErpIntegration::config</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General Settings</label>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable ERP Integration</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>erp_integration/general/enabled</config_path>
+                </field>
+                <field id="api_url" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>ERP API URL</label>
+                    <comment>Example: https://testerp.a2za1.com/api/resource/Customer</comment>
+                    <validate>required-entry validate-url</validate>
+                    <config_path>erp_integration/general/api_url</config_path>
+                </field>
+                <field id="api_token" translate="label" type="obscure" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>API Token</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <comment>Your ERP API authentication token</comment>
+                    <validate>required-entry</validate>
+                    <config_path>erp_integration/general/api_token</config_path>
+                </field>
+                <field id="timeout" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>API Timeout (seconds)</label>
+                    <validate>validate-number validate-greater-than-zero</validate>
+                    <comment>Request timeout in seconds (default: 30)</comment>
+                    <config_path>erp_integration/general/timeout</config_path>
+                </field>
+            </group>
+            <group id="sync_settings" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Sync Settings</label>
+                <field id="sync_on_registration" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sync on Customer Registration</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>erp_integration/sync_settings/sync_on_registration</config_path>
+                </field>
+                <field id="sync_on_update" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sync on Customer Update</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>erp_integration/sync_settings/sync_on_update</config_path>
+                </field>
+                <field id="log_enabled" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Logging</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Log all ERP sync activities to var/log/erp_integration.log</comment>
+                    <config_path>erp_integration/sync_settings/log_enabled</config_path>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
