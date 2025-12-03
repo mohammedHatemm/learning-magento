@@ -8,9 +8,9 @@ use Elsherif\Bosta\Helper\Data as BostaHelper;
 use Elsherif\Bosta\Model\Config\Source\CalculationMethod;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Quote\Model\Quote\Address\RateRequest;
+use Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory;
 use Magento\Quote\Model\Quote\Address\RateResult\Method;
 use Magento\Quote\Model\Quote\Address\RateResult\MethodFactory;
-use Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory;
 use Magento\Shipping\Model\Carrier\AbstractCarrier;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
 use Magento\Shipping\Model\Rate\Result;
@@ -70,21 +70,21 @@ class Customshipping extends AbstractCarrier implements CarrierInterface
         $shippingCost = $this->calculateShippingCost($request, $calculationMethod);
 
         // Check for free shipping threshold
-        $freeShippingThreshold = (float) $this->getConfigData('free_shipping_threshold');
+        $freeShippingThreshold = (float)$this->getConfigData('free_shipping_threshold');
         if ($freeShippingThreshold > 0 && $request->getPackageValue() >= $freeShippingThreshold) {
             $shippingCost = 0.00;
         }
 
         // Add handling fee if configured
-        $handlingFee = (float) $this->getConfigData('handling_fee');
+        $handlingFee = (float)$this->getConfigData('handling_fee');
         if ($handlingFee > 0) {
             $shippingCost += $handlingFee;
         }
 
         // Add VAT if configured
-        $includeVat = (bool) $this->getConfigData('include_vat');
+        $includeVat = (bool)$this->getConfigData('include_vat');
         if ($includeVat && $shippingCost > 0) {
-            $vatPercentage = (float) $this->getConfigData('vat_percentage') ?: 14.0;
+            $vatPercentage = (float)$this->getConfigData('vat_percentage') ?: 14.0;
             $vatAmount = $shippingCost * ($vatPercentage / 100);
             $shippingCost += $vatAmount;
         }
@@ -111,6 +111,7 @@ class Customshipping extends AbstractCarrier implements CarrierInterface
 
     /**
      * Calculate shipping cost based on calculation method
+     * ALL methods now use Bosta API - no hardcoded values
      *
      * @param RateRequest $request
      * @param string $calculationMethod
@@ -118,103 +119,43 @@ class Customshipping extends AbstractCarrier implements CarrierInterface
      */
     private function calculateShippingCost(RateRequest $request, string $calculationMethod): float
     {
-        switch ($calculationMethod) {
-            case CalculationMethod::METHOD_FIXED:
-                return $this->calculateFixedRate();
+        // Get city and weight from request
+        $city = $request->getDestCity();
+        $weight = (float)$request->getPackageWeight();
 
-            case CalculationMethod::METHOD_BY_WEIGHT:
-                return $this->calculateByWeight($request);
-
-            case CalculationMethod::METHOD_BY_CITY:
-                return $this->calculateByCity($request);
-
-            case CalculationMethod::METHOD_BY_CITY_AND_WEIGHT:
-                return $this->calculateByCityAndWeight($request);
-
-            default:
-                return $this->calculateFixedRate();
+        // Validate city is provided
+        if (empty($city)) {
+            $this->_logger->warning('Bosta shipping: No city provided in request');
+            return 0.0; // No city = no shipping price
         }
-    }
 
-    /**
-     * Calculate fixed rate
-     *
-     * @return float
-     */
-    private function calculateFixedRate(): float
-    {
-        return (float) $this->getConfigData('shipping_cost');
-    }
-
-    /**
-     * Calculate rate by weight
-     *
-     * @param RateRequest $request
-     * @return float
-     */
-    private function calculateByWeight(RateRequest $request): float
-    {
-        $weight = (float) $request->getPackageWeight();
-
-        // Set minimum weight if empty or zero
+        // Set minimum weight
         if ($weight <= 0) {
             $weight = 1.0;
-        }
-
-        $baseRate = 25.00; // Base rate in EGP
-        $perKgRate = 5.00; // Rate per kg
-
-        return $baseRate + ($weight * $perKgRate);
-    }
-
-    /**
-     * Calculate rate by city
-     *
-     * @param RateRequest $request
-     * @return float
-     */
-    private function calculateByCity(RateRequest $request): float
-    {
-        $city = $request->getDestCity();
-
-        if (empty($city)) {
-            return $this->calculateFixedRate();
         }
 
         // Normalize city name
         $normalizedCity = $this->bostaHelper->normalizeCityName($city);
 
-        // Get rate from helper (uses city-based rate matrix)
-        $weight = 1.0; // Default weight for city-only calculation
-        return $this->bostaHelper->calculateShippingRate($normalizedCity, $weight);
-    }
+        // ALL calculation methods now use Bosta API with city + weight
+        // This ensures 100% API-based pricing with no hardcoded values
+        $price = $this->bostaHelper->calculateShippingRate($normalizedCity, $weight);
 
-    /**
-     * Calculate rate by city and weight (Recommended method)
-     *
-     * @param RateRequest $request
-     * @return float
-     */
-    private function calculateByCityAndWeight(RateRequest $request): float
-    {
-        $city = $request->getDestCity();
-        $weight = (float) $request->getPackageWeight();
-
-        // Set minimum weight if empty or zero
-        if ($weight <= 0) {
-            $weight = 1.0;
+        if ($price <= 0) {
+            $this->_logger->error('Bosta API returned invalid price', [
+                'city' => $city,
+                'weight' => $weight
+            ]);
         }
 
-        if (empty($city)) {
-            return $this->calculateByWeight($request);
-        }
-
-        // Normalize city name
-        $normalizedCity = $this->bostaHelper->normalizeCityName($city);
-
-        // Calculate using Bosta helper with city and weight
-        return $this->bostaHelper->calculateShippingRate($normalizedCity, $weight);
+        return $price;
     }
+
+    // ========================================================================
+    // NOTE: All individual calculation methods have been removed
+    // ALL pricing now comes from Bosta API via calculateShippingCost()
+    // No hardcoded values, no defaults, 100% API-based pricing
+    // ========================================================================
 
     /**
      * Get allowed shipping methods
