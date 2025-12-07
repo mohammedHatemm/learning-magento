@@ -67,6 +67,12 @@ class SaveDeliveryToDatabase implements ObserverInterface
                 $delivery->setCodAmount($deliveryData['cod']);
                 $delivery->setShippingCost($order->getShippingAmount());
                 $delivery->setDeliveryData($result['data']);
+
+                // Extract and save AWB URL if present
+                if (isset($result['data']['airWayBillUrl'])) {
+                    $delivery->setAwbUrl($result['data']['airWayBillUrl']);
+                }
+
                 $delivery->save();
 
                 // Add comment to order

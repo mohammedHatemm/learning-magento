@@ -4,31 +4,34 @@ declare(strict_types=1);
 
 namespace Elsherif\Bosta\Block\Adminhtml\Order\View\Tab;
 
+use Elsherif\Bosta\Helper\Data as BostaHelper;
 use Elsherif\Bosta\Model\ResourceModel\Delivery\CollectionFactory as DeliveryCollectionFactory;
 use Elsherif\Bosta\Model\ResourceModel\TrackingEvent\CollectionFactory as TrackingEventCollectionFactory;
 use Magento\Backend\Block\Template;
 use Magento\Backend\Block\Template\Context;
-use Magento\Backend\Block\Widget\Tab\TabInterface;
 use Magento\Framework\Registry;
 
-class Bosta extends Template implements TabInterface
+class Bosta extends Template
 {
     protected $_template = 'Elsherif_Bosta::order/view/tab/bosta.phtml';
 
     private Registry $coreRegistry;
     private DeliveryCollectionFactory $deliveryCollectionFactory;
     private TrackingEventCollectionFactory $trackingEventCollectionFactory;
+    private BostaHelper $bostaHelper;
 
     public function __construct(
         Context $context,
         Registry $coreRegistry,
         DeliveryCollectionFactory $deliveryCollectionFactory,
         TrackingEventCollectionFactory $trackingEventCollectionFactory,
+        BostaHelper $bostaHelper,
         array $data = []
     ) {
         $this->coreRegistry = $coreRegistry;
         $this->deliveryCollectionFactory = $deliveryCollectionFactory;
         $this->trackingEventCollectionFactory = $trackingEventCollectionFactory;
+        $this->bostaHelper = $bostaHelper;
         parent::__construct($context, $data);
     }
 
@@ -61,40 +64,27 @@ class Bosta extends Template implements TabInterface
         return $collection;
     }
 
-    public function getTabLabel()
+    /**
+     * Check if this block should be displayed
+     * Only show for orders using Bosta shipping
+     *
+     * @return bool
+     */
+    public function canShow()
     {
-        return __('Bosta Delivery');
-    }
-
-    public function getTabTitle()
-    {
-        return __('Bosta Delivery Information');
-    }
-
-    public function canShowTab()
-    {
-        return true;
-    }
-
-    public function isHidden()
-    {
-        // Show tab if order uses Bosta shipping, even if delivery doesn't exist yet
         $order = $this->getOrder();
         if (!$order) {
-            return true;
+            return false;
         }
 
         $shippingMethod = $order->getShippingMethod();
-        if (!$shippingMethod || strpos($shippingMethod, 'customshipping') === false) {
-            return true;
-        }
-
-        return false;
+        return $shippingMethod && strpos($shippingMethod, 'customshipping') !== false;
     }
 
     public function getBostaTrackingUrl($trackingNumber)
     {
-        return 'https://app.bosta.co/tracking/' . $trackingNumber;
+        // Bosta's public customer tracking page
+        return 'https://bosta.co/tracking-shipments?shipment-number=' . urlencode($trackingNumber);
     }
 
     public function formatStatus($status)
@@ -105,5 +95,15 @@ class Bosta extends Template implements TabInterface
     public function getFormKey()
     {
         return $this->formKey->getFormKey();
+    }
+
+    /**
+     * Get shipping policy information
+     *
+     * @return array
+     */
+    public function getShippingPolicy()
+    {
+        return $this->bostaHelper->getShippingPolicy($this->getDelivery());
     }
 }

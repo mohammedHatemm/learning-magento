@@ -99,6 +99,8 @@ class Customshipping extends AbstractCarrier implements CarrierInterface
         $method->setMethod($this->_code);
         $method->setMethodTitle($this->getConfigData('name'));
 
+        // Hide shipping price from customer (show as free shipping)
+        // Real cost is stored in setCost() for admin reporting and Bosta delivery
         $method->setPrice($shippingCost);
         $method->setCost($shippingCost);
 

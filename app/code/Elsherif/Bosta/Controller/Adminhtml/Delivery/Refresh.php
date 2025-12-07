@@ -83,16 +83,17 @@ class Refresh extends Action implements HttpPostActionInterface
                 ]);
             }
 
-            $trackingNumber = $delivery->getTrackingNumber();
-            if (!$trackingNumber) {
+            // Get Bosta Delivery ID (required for API call, not tracking number)
+            $bostaDeliveryId = $delivery->getBostaDeliveryId();
+            if (!$bostaDeliveryId) {
                 return $resultJson->setData([
                     'success' => false,
-                    'message' => __('Tracking number not found.')
+                    'message' => __('Bosta Delivery ID not found. Please ensure the delivery was created properly.')
                 ]);
             }
 
-            // Fetch tracking info from Bosta API
-            $apiResponse = $this->bostaHelper->trackDelivery($trackingNumber);
+            // Fetch tracking info from Bosta API using Delivery ID
+            $apiResponse = $this->bostaHelper->trackDelivery($bostaDeliveryId);
 
             if (!$apiResponse['success'] || !isset($apiResponse['data'])) {
                 return $resultJson->setData([

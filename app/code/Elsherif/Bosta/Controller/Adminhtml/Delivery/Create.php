@@ -120,9 +120,11 @@ class Create extends Action implements HttpPostActionInterface
 
             $this->deliveryResource->save($delivery);
 
-            // Add order comment
+            // Update order status to Bosta - Pending and add comment
+            $order->setState(\Magento\Sales\Model\Order::STATE_PROCESSING);
             $order->addCommentToStatusHistory(
-                __('Bosta delivery created manually. Tracking Number: %1', $deliveryData['trackingNumber'])
+                __('Order sent to Bosta for shipping. Tracking Number: %1', $deliveryData['trackingNumber']),
+                'bosta_pending'  // Set custom Bosta status
             );
             $this->orderRepository->save($order);
 
